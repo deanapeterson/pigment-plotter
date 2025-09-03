@@ -1,43 +1,18 @@
-import { useState } from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Palette } from "lucide-react";
+import { Plus, Palette, Download } from "lucide-react";
 import { ColorInput } from "./ColorInput";
 import { ColorCard } from "./ColorCard";
 import { toast } from "sonner";
-
-export interface ColorData {
-  id: string;
-  hex: string;
-  name?: string;
-}
+import { usePaletteService } from "@/hooks/usePaletteService";
 
 export const ColorPaletteBuilder = () => {
-  const [colors, setColors] = useState<ColorData[]>([
-    { id: "1", hex: "#8B5CF6", name: "Primary Purple" },
-    { id: "2", hex: "#0EA5E9", name: "Accent Blue" }
-  ]);
+  const { colors, addColor, removeColor, updateColor, downloadJson, getVariations } = usePaletteService();
 
-  const addColor = (hex: string, name?: string) => {
-    const newColor: ColorData = {
-      id: Date.now().toString(),
-      hex,
-      name: name || `Color ${colors.length + 1}`
-    };
-    setColors([...colors, newColor]);
-    toast(`Added ${hex} to your palette!`);
-  };
-
-  const removeColor = (id: string) => {
-    setColors(colors.filter(color => color.id !== id));
-    toast("Color removed from palette");
-  };
-
-  const updateColor = (id: string, hex: string, name?: string) => {
-    setColors(colors.map(color => 
-      color.id === id ? { ...color, hex, name } : color
-    ));
-    toast("Color updated!");
+  const handleExport = () => {
+    downloadJson();
+    toast("Palette exported successfully!");
   };
 
   return (
@@ -57,6 +32,14 @@ export const ColorPaletteBuilder = () => {
             Create beautiful color palettes with automatic tints, shades, and variations. 
             Perfect for designers and developers.
           </p>
+          {colors.length > 0 && (
+            <div className="mt-6">
+              <Button onClick={handleExport} className="gap-2">
+                <Download className="w-4 h-4" />
+                Export Palette
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Add New Color */}
@@ -85,6 +68,7 @@ export const ColorPaletteBuilder = () => {
                 color={color}
                 onRemove={() => removeColor(color.id)}
                 onUpdate={(hex, name) => updateColor(color.id, hex, name)}
+                variations={getVariations(color.id)}
               />
             ))
           )}

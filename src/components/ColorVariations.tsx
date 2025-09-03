@@ -2,16 +2,19 @@ import { Badge } from "@/components/ui/badge";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import { generateTints, generateShades, generateAnalogous, generateComplementary } from "@/lib/colorUtils";
+import { ColorVariations as ColorVariationsType } from "@/services/paletteService";
 
 interface ColorVariationsProps {
   baseColor: string;
+  variations?: ColorVariationsType;
 }
 
-export const ColorVariations = ({ baseColor }: ColorVariationsProps) => {
-  const tints = generateTints(baseColor, 8);
-  const shades = generateShades(baseColor, 8);
-  const analogous = generateAnalogous(baseColor);
-  const complementary = generateComplementary(baseColor);
+export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps) => {
+  // Use provided variations or generate them
+  const tints = variations?.tints || generateTints(baseColor, 8);
+  const shades = variations?.shades || generateShades(baseColor, 8);
+  const analogous = variations?.analogous || generateAnalogous(baseColor);
+  const complementary = variations?.complementary || generateComplementary(baseColor);
 
   const handleCopy = (color: string) => {
     navigator.clipboard.writeText(color);
