@@ -1,22 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Edit2, Copy, Check, X } from "lucide-react";
-import { toast } from "sonner";
+import { Trash2, Copy, Edit2, Check, X } from "lucide-react";
+import { ColorData } from "./ColorPaletteBuilder";
 import { ColorVariations } from "./ColorVariations";
-import { hexToRgb, hexToHsl, getContrastColor } from "@/lib/colorUtils";
-import { ColorVariations as ColorVariationsType, ColorData } from "@/services/paletteService";
+import { toast } from "sonner";
+import { hexToHsl, hexToRgb, getContrastColor } from "@/lib/colorUtils";
 
 interface ColorCardProps {
   color: ColorData;
   onRemove: () => void;
   onUpdate: (hex: string, name?: string) => void;
-  variations?: ColorVariationsType;
 }
 
-export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardProps) => {
+export const ColorCard = ({ color, onRemove, onUpdate }: ColorCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editHex, setEditHex] = useState(color.hex);
   const [editName, setEditName] = useState(color.name || "");
@@ -152,11 +151,7 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
 
         {/* Color Variations - Right Side */}
         <div className="flex-1 p-6">
-          {variations ? (
-            <ColorVariations baseColor={color.hex} variations={variations} />
-          ) : (
-            <ColorVariations baseColor={color.hex} />
-          )}
+          <ColorVariations baseColor={color.hex} />
         </div>
       </div>
     </Card>
