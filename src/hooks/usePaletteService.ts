@@ -33,6 +33,14 @@ export const usePaletteService = () => {
     paletteService.downloadJson();
   }, [paletteService]);
 
+  const exportFlatColors = useCallback(() => {
+    return paletteService.exportFlatColors();
+  }, [paletteService]);
+
+  const downloadFlatColors = useCallback(() => {
+    paletteService.downloadFlatColors();
+  }, [paletteService]);
+
   const getVariations = useCallback((colorId: string) => {
     return paletteService.getVariations(colorId);
   }, [paletteService]);
@@ -44,6 +52,8 @@ export const usePaletteService = () => {
     updateColor,
     exportToJson,
     downloadJson,
+    exportFlatColors, // Expose new function
+    downloadFlatColors, // Expose new function
     getVariations,
   };
 };

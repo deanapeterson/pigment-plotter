@@ -6,13 +6,25 @@ import { ColorInput } from "./ColorInput";
 import { ColorCard } from "./ColorCard";
 import { toast } from "sonner";
 import { usePaletteService } from "@/hooks/usePaletteService";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; // Import DropdownMenu components
 
 export const ColorPaletteBuilder = () => {
-  const { colors, addColor, removeColor, updateColor, downloadJson, getVariations } = usePaletteService();
+  const { colors, addColor, removeColor, updateColor, downloadJson, downloadFlatColors, getVariations } = usePaletteService();
 
-  const handleExport = () => {
+  const handleExportFullPalette = () => {
     downloadJson();
-    toast("Palette exported successfully!");
+    toast("Full palette exported successfully!");
+  };
+
+  const handleExportFlatList = () => {
+    downloadFlatColors();
+    toast("Flat list of colors exported successfully!");
   };
 
   return (
@@ -20,10 +32,23 @@ export const ColorPaletteBuilder = () => {
       {/* Export Palette Button - Fixed Position */}
       {colors.length > 0 && (
         <div className="fixed top-4 right-4 z-50">
-          <Button onClick={handleExport} className="gap-2 shadow-lg">
-            <Download className="w-4 h-4" />
-            Export Palette
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2 shadow-lg">
+                <Download className="w-4 h-4" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportFullPalette}>
+                Export Full Palette (JSON)
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleExportFlatList}>
+                Export Flat List (JSON)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
 

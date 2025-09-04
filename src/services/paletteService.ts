@@ -92,6 +92,36 @@ export class PaletteService {
     URL.revokeObjectURL(url);
   }
 
+  exportFlatColors(): string[] {
+    const uniqueColors = new Set<string>();
+
+    // Add base colors
+    this.data.baseColors.forEach(color => uniqueColors.add(color.hex.toUpperCase()));
+
+    // Add variation colors
+    Object.values(this.data.variations).forEach(variationSet => {
+      Object.values(variationSet).forEach(colorsArray => {
+        colorsArray.forEach(colorHex => uniqueColors.add(colorHex.toUpperCase()));
+      });
+    });
+
+    return Array.from(uniqueColors);
+  }
+
+  downloadFlatColors(): void {
+    const flatColors = this.exportFlatColors();
+    const jsonData = JSON.stringify(flatColors, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `color-palette-flat-${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
   importFromJson(jsonString: string): void {
     try {
       const importData = JSON.parse(jsonString);
