@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ColorVariations } from "./ColorVariations";
 import { hexToRgb, hexToHsl, getContrastColor } from "@/lib/colorUtils";
 import { ColorVariations as ColorVariationsType, ColorData } from "@/services/paletteService";
+import { HexColorPicker } from "react-colorful"; // Import HexColorPicker
 
 interface ColorCardProps {
   color: ColorData;
@@ -43,10 +44,10 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
 
   return (
     <Card className="overflow-hidden shadow-soft border-0 bg-card/60 backdrop-blur-sm hover:shadow-elegant transition-all duration-300">
-      <div className="flex">
+      <div className="flex flex-col md:flex-row"> {/* Added flex-col and md:flex-row for responsiveness */}
         {/* Primary Color Section - Left Side */}
         <div 
-          className="w-64 p-6 text-center relative flex flex-col justify-center"
+          className="w-full md:w-64 p-6 text-center relative flex flex-col justify-center" // Adjusted width for responsiveness
           style={{ backgroundColor: color.hex, color: contrastColor }}
         >
           <div className="absolute top-4 right-4 flex gap-2">
@@ -92,7 +93,7 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
           </div>
 
           {isEditing ? (
-            <div className="space-y-3">
+            <div className="space-y-3 mt-8"> {/* Added mt-8 for spacing below buttons */}
               <Input
                 value={editHex}
                 onChange={(e) => setEditHex(e.target.value)}
@@ -105,6 +106,9 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
                 className="text-center bg-white/20 border-white/30 text-current placeholder:text-current/70"
                 placeholder="Color name"
               />
+              <div className="flex justify-center pt-4"> {/* Centered color picker */}
+                <HexColorPicker color={editHex} onChange={setEditHex} className="w-full max-w-[200px]" /> {/* Added max-w for better sizing */}
+              </div>
             </div>
           ) : (
             <>
@@ -142,7 +146,7 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
         </div>
 
         {/* Color Variations - Right Side */}
-        <div className="flex-1 p-4"> {/* Reduced p-6 to p-4 */}
+        <div className="flex-1 p-4">
           {variations ? (
             <ColorVariations baseColor={color.hex} variations={variations} />
           ) : (
