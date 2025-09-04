@@ -17,6 +17,16 @@ export const ColorPaletteBuilder = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      {/* Export Palette Button - Fixed Position */}
+      {colors.length > 0 && (
+        <div className="fixed top-4 right-4 z-50">
+          <Button onClick={handleExport} className="gap-2 shadow-lg">
+            <Download className="w-4 h-4" />
+            Export Palette
+          </Button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="container mx-auto px-6 py-8">
         <div className="text-center mb-12">
@@ -32,14 +42,6 @@ export const ColorPaletteBuilder = () => {
             Create beautiful color palettes with automatic tints, shades, and variations. 
             Perfect for designers and developers.
           </p>
-          {colors.length > 0 && (
-            <div className="mt-6">
-              <Button onClick={handleExport} className="gap-2">
-                <Download className="w-4 h-4" />
-                Export Palette
-              </Button>
-            </div>
-          )}
         </div>
 
         {/* Add New Color */}
