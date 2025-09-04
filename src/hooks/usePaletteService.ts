@@ -12,17 +12,17 @@ export const usePaletteService = () => {
       name,
     };
     paletteService.addColor(newColor);
-    setColors(paletteService.getColors());
+    setColors([...paletteService.getColors()]); // Create a new array reference
   }, [paletteService]);
 
   const removeColor = useCallback((id: string) => {
     paletteService.removeColor(id);
-    setColors(paletteService.getColors());
+    setColors([...paletteService.getColors()]); // Create a new array reference
   }, [paletteService]);
 
   const updateColor = useCallback((id: string, hex: string, name?: string) => {
     paletteService.updateColor(id, hex, name);
-    setColors(paletteService.getColors());
+    setColors([...paletteService.getColors()]); // Create a new array reference
   }, [paletteService]);
 
   const exportToJson = useCallback(() => {
