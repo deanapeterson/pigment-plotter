@@ -22,13 +22,13 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   };
 
   const ColorStrip = ({ colors, title }: { colors: string[]; title: string }) => (
-    <div className="space-y-1"> {/* Reduced space-y-2 to space-y-1 */}
+    <div className="space-y-1">
       <Badge variant="secondary" className="text-xs">{title}</Badge>
       <div className="grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
         {colors.map((color, index) => (
           <div
             key={index}
-            className="aspect-square cursor-pointer hover:scale-105 transition-transform duration-200 relative group"
+            className="aspect-2/1 cursor-pointer hover:scale-105 transition-transform duration-200 relative group" // Changed aspect-square to aspect-2/1
             style={{ backgroundColor: color }}
             onClick={() => handleCopy(color)}
             title={color}
@@ -50,13 +50,13 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
     }
 
     return (
-      <div className="space-y-1"> {/* Reduced space-y-2 to space-y-1 */}
+      <div className="space-y-1">
         <Badge variant="secondary" className="text-xs">{title}</Badge>
         <div className="grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
           {paddedColors.map((color, index) => (
             <div
               key={index}
-              className={`aspect-square transition-transform duration-200 relative group ${
+              className={`aspect-2/1 transition-transform duration-200 relative group ${ // Changed aspect-square to aspect-2/1
                 color === 'transparent' ? 'cursor-default' : 'cursor-pointer hover:scale-105'
               }`}
               style={{ backgroundColor: color === 'transparent' ? 'transparent' : color }}
@@ -76,18 +76,18 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   };
 
   return (
-    <div className="space-y-4"> {/* Reduced space-y-6 to space-y-4 */}
+    <div className="space-y-4">
       <div>
-        <h4 className="font-semibold mb-2 text-foreground">Color Variations</h4> {/* Reduced mb-4 to mb-2 */}
-        <div className="space-y-2"> {/* Reduced space-y-4 to space-y-2 */}
+        <h4 className="font-semibold mb-2 text-foreground">Color Variations</h4>
+        <div className="space-y-2">
           <ColorStrip colors={tints} title="Tints (Lighter)" />
           <ColorStrip colors={shades} title="Shades (Darker)" />
         </div>
       </div>
 
       <div>
-        <h4 className="font-semibold mb-2 text-foreground">Color Harmonies</h4> {/* Reduced mb-4 to mb-2 */}
-        <div className="space-y-2"> {/* Reduced space-y-4 to space-y-2 */}
+        <h4 className="font-semibold mb-2 text-foreground">Color Harmonies</h4>
+        <div className="space-y-2">
           <ColorHarmonyStrip colors={analogous} title="Analogous Colors" />
           <ColorHarmonyStrip colors={complementary} title="Complementary Colors" />
         </div>

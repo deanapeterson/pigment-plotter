@@ -105,7 +105,10 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+			},
+			aspectRatio: { // Added custom aspect ratio
+        '2/1': '2 / 1',
+      },
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
