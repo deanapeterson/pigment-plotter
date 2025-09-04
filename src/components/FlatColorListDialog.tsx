@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { FixedSizeGrid } from "react-window"; // Import FixedSizeGrid
 import {
   Dialog,
   DialogContent,
@@ -8,7 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+// Removed ScrollArea import as FixedSizeGrid handles its own scrolling
 import { Copy, List, Code } from "lucide-react";
 import { toast } from "sonner";
 import { getContrastColor, hexToHsl } from "@/lib/colorUtils";
@@ -56,6 +57,80 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
     toast.success("JSON list copied to clipboard!");
   };
 
+  const gridContainerRef = useRef<HTMLDivElement>(null);
+  const [gridWidth, setGridWidth] = useState(0);
+  const [gridHeight, setGridHeight] = useState(0);
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (gridContainerRef.current) {
+        setGridWidth(gridContainerRef.current.offsetWidth);
+        setGridHeight(gridContainerRef.current.offsetHeight);
+      }
+    };
+
+    updateDimensions(); // Set initial dimensions
+
+    const observer = new ResizeObserver(updateDimensions);
+    if (gridContainerRef.current) {
+      observer.observe(gridContainerRef.current);
+    }
+
+    return () => {
+      if (gridContainerRef.current) {
+        observer.unobserve(gridContainerRef.current);
+      }
+    };
+  }, []);
+
+  const MIN_ITEM_WIDTH = 100; // Minimum width for a color square
+  const GAP = 8; // Corresponds to Tailwind's gap-2
+
+  // Calculate column count based on available width and minimum item width
+  const calculatedColumnCount = Math.max(1, Math.floor((gridWidth + GAP) / (MIN_ITEM_WIDTH + GAP)));
+  // Calculate the actual width of each item, distributing remaining space
+  const actualItemWidth = (gridWidth - (calculatedColumnCount - 1) * GAP) / calculatedColumnCount;
+  const actualItemHeight = actualItemWidth; // For aspect-square
+
+  // For react-window, columnWidth and rowHeight should include the gap
+  const columnWidthWithGap = actualItemWidth + GAP;
+  const rowHeightWithGap = actualItemHeight + GAP;
+
+  const rowCount = Math.ceil(sortedColors.length / calculatedColumnCount);
+
+  // Cell component for react-window FixedSizeGrid
+  const GridCell = useCallback(({ columnIndex, rowIndex, style, data }: any) => {
+    const index = rowIndex * calculatedColumnCount + columnIndex;
+    const color = data[index];
+
+    if (!color) {
+      return null; // No color at this index
+    }
+
+    const contrastColor = getContrastColor(color);
+
+    return (
+      <div style={style}> {/* This div gets the absolute positioning and full cell size from react-window */}
+        <div
+          className="flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-transform duration-100 hover:scale-105 shadow-sm"
+          style={{
+            backgroundColor: color,
+            color: contrastColor,
+            width: actualItemWidth, // Explicitly set the item's width
+            height: actualItemHeight, // Explicitly set the item's height
+          }}
+          title={`Click to copy ${color.toUpperCase()}`}
+          onClick={() => {
+            navigator.clipboard.writeText(color);
+            toast.success(`${color.toUpperCase()} copied to clipboard!`);
+          }}
+        >
+          {color.toUpperCase()}
+        </div>
+      </div>
+    );
+  }, [calculatedColumnCount, actualItemWidth, actualItemHeight, sortedColors]); // Dependencies for useCallback
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col">
@@ -80,33 +155,27 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
         {sortedColors.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">No colors in the palette to export.</p>
         ) : (
-          <ScrollArea className="flex-1 rounded-md border p-4 bg-muted/20">
+          <div ref={gridContainerRef} className="flex-1 rounded-md border p-4 bg-muted/20 overflow-auto">
             {viewAsJson ? (
               <div className="font-mono text-sm cursor-pointer" onClick={handleCopyJson}>
                 <pre>{jsonOutput}</pre>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                {sortedColors.map((color, index) => {
-                  const contrastColor = getContrastColor(color);
-                  return (
-                    <div
-                      key={index}
-                      className="aspect-square flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-transform duration-100 hover:scale-105 shadow-sm"
-                      style={{ backgroundColor: color, color: contrastColor }}
-                      title={`Click to copy ${color.toUpperCase()}`}
-                      onClick={() => {
-                        navigator.clipboard.writeText(color);
-                        toast.success(`${color.toUpperCase()} copied to clipboard!`);
-                      }}
-                    >
-                      {color.toUpperCase()}
-                    </div>
-                  );
-                })}
-              </div>
+              gridWidth > 0 && gridHeight > 0 && (
+                <FixedSizeGrid
+                  columnCount={calculatedColumnCount}
+                  columnWidth={columnWidthWithGap} // Pass item width + gap
+                  height={gridHeight}
+                  rowCount={rowCount}
+                  rowHeight={rowHeightWithGap} // Pass item height + gap
+                  width={gridWidth}
+                  itemData={sortedColors}
+                >
+                  {GridCell}
+                </FixedSizeGrid>
+              )
             )}
-          </ScrollArea>
+          </div>
         )}
         <DialogFooter className="flex-col sm:flex-row sm:justify-end gap-2 mt-4">
           <Button onClick={handleCopyAll} disabled={sortedColors.length === 0} className="w-full sm:w-auto">
