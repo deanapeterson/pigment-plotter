@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary } from "@/lib/colorUtils";
 import { ColorVariations as ColorVariationsType } from "@/services/paletteService";
+import { toast } from "sonner"; // Import toast for notifications
 
 interface ColorVariationsProps {
   baseColor: string;
@@ -13,10 +14,15 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   const shades = variations?.shades || generateShades(baseColor, 5);
   const analogous = variations?.analogous || generateAnalogous(baseColor);
   const complementary = variations?.complementary || generateComplementary(baseColor);
-  const triadic = variations?.triadic || generateTriadic(baseColor); // Added triadic
-  const square = variations?.square || generateSquare(baseColor); // Added square
-  const tetradic = variations?.tetradic || generateTetradic(baseColor); // Added tetradic
-  const splitComplementary = variations?.splitComplementary || generateSplitComplementary(baseColor); // Added split complementary
+  const triadic = variations?.triadic || generateTriadic(baseColor);
+  const square = variations?.square || generateSquare(baseColor);
+  const tetradic = variations?.tetradic || generateTetradic(baseColor);
+  const splitComplementary = variations?.splitComplementary || generateSplitComplementary(baseColor);
+
+  const handleCopy = (value: string, format: string) => {
+    navigator.clipboard.writeText(value);
+    toast(`${format} copied to clipboard!`);
+  };
 
   const ColorStrip = ({ colors, title }: { colors: string[]; title: string }) => (
     <div className="flex items-center gap-2">
@@ -25,9 +31,10 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
         {colors.map((color, index) => (
           <div
             key={index}
-            className="aspect-2/1 relative group"
+            className="aspect-2/1 relative group cursor-pointer hover:scale-105 transition-transform duration-100" // Added cursor-pointer and hover effect
             style={{ backgroundColor: color }}
             title={color}
+            onClick={() => handleCopy(color, "HEX")} // Added onClick handler
           >
           </div>
         ))}
@@ -50,10 +57,11 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
             <div
               key={index}
               className={`aspect-2/1 relative group ${
-                color === 'transparent' ? 'cursor-default' : ''
+                color === 'transparent' ? 'cursor-default' : 'cursor-pointer hover:scale-105 transition-transform duration-100'
               }`}
               style={{ backgroundColor: color === 'transparent' ? 'transparent' : color }}
               title={color === 'transparent' ? '' : color}
+              onClick={() => color !== 'transparent' && handleCopy(color, "HEX")} // Added onClick handler, only for non-transparent colors
             >
             </div>
           ))}
