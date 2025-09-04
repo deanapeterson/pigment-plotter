@@ -57,8 +57,7 @@ export const ColorPaletteBuilder = () => {
 
   const [isFlatListDialogOpen, setIsFlatListDialogOpen] = useState(false);
   const [flatColorsToDisplay, setFlatColorsToDisplay] = useState<string[]>([]);
-  const [isCreatePaletteDialogOpen, setIsCreatePaletteDialogOpen] = useState(false);
-  const [newPaletteName, setNewPaletteName] = useState("");
+  // Removed isCreatePaletteDialogOpen and newPaletteName states
   const [isImportPaletteDialogOpen, setIsImportPaletteDialogOpen] = useState(false);
   const [importJsonInput, setImportJsonInput] = useState("");
 
@@ -73,17 +72,20 @@ export const ColorPaletteBuilder = () => {
     setIsFlatListDialogOpen(true);
   };
 
-  const handleCreateNewPalette = () => {
-    if (!newPaletteName.trim()) {
-      toast.error("Palette name cannot be empty.");
-      return;
+  const handleCreateNewPaletteDirectly = () => {
+    let newName = "New Palette";
+    let counter = 1;
+    // Find a unique name like "New Palette 1", "New Palette 2", etc.
+    while (allPaletteNames.includes(newName)) {
+      newName = `New Palette ${counter}`;
+      counter++;
     }
-    if (createNewPalette(newPaletteName.trim())) {
-      toast.success(`Palette '${newPaletteName}' created and activated!`);
-      setNewPaletteName("");
-      setIsCreatePaletteDialogOpen(false);
+
+    if (createNewPalette(newName)) {
+      toast.success(`Palette '${newName}' created and activated!`);
     } else {
-      toast.error(`Palette with name '${newPaletteName}' already exists.`);
+      // This case should ideally not be hit if name generation is unique
+      toast.error(`Failed to create palette '${newName}'. It might already exist.`);
     }
   };
 
@@ -128,7 +130,7 @@ export const ColorPaletteBuilder = () => {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsCreatePaletteDialogOpen(true)}>
+            <DropdownMenuItem onClick={handleCreateNewPaletteDirectly}> {/* Updated onClick */}
               <FolderPlus className="w-4 h-4 mr-2" /> Create New Palette
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setIsImportPaletteDialogOpen(true)}>
@@ -255,30 +257,7 @@ export const ColorPaletteBuilder = () => {
         colors={flatColorsToDisplay}
       />
 
-      {/* Create New Palette Dialog */}
-      <Dialog open={isCreatePaletteDialogOpen} onOpenChange={setIsCreatePaletteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New Palette</DialogTitle>
-            <DialogDescription>
-              Enter a name for your new color palette. It will become the active palette.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Label htmlFor="new-palette-name">Palette Name</Label>
-            <Input
-              id="new-palette-name"
-              value={newPaletteName}
-              onChange={(e) => setNewPaletteName(e.target.value)}
-              placeholder="e.g., My Project Colors"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreatePaletteDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleCreateNewPalette}>Create Palette</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Removed Create New Palette Dialog */}
 
       {/* Import Palette Dialog */}
       <Dialog open={isImportPaletteDialogOpen} onOpenChange={setIsImportPaletteDialogOpen}>
