@@ -140,39 +140,18 @@ export const generateAnalogous = (baseHex: string): string[] => {
   return analogous;
 };
 
-// Helper to get a single tint and shade
-const getSingleTintAndShade = (hex: string): { tint: string; shade: string } => {
-  const { h, s, l } = hexToHsl(hex);
-  const lightnessStep = 15; // Adjust this value for desired tint/shade intensity
-
-  const tintL = Math.min(99, l + lightnessStep); // Max 99% lightness
-  const shadeL = Math.max(1, l - lightnessStep); // Min 1% lightness
-
-  const tintHex = hslToHex(h, s, tintL);
-  const shadeHex = hslToHex(h, s, shadeL);
-
-  return { tint: tintHex, shade: shadeHex };
-};
-
 export const generateComplementary = (baseHex: string): string[] => {
   const { h, s, l } = hexToHsl(baseHex);
-  const complementaryColors: string[] = [];
+  const complementary: string[] = [];
   
-  // Base color and its tint/shade
-  complementaryColors.push(baseHex);
-  const { tint: baseTint, shade: baseShade } = getSingleTintAndShade(baseHex);
-  complementaryColors.push(baseTint);
-  complementaryColors.push(baseShade);
-
-  // Complementary color (180 degrees opposite) and its tint/shade
+  // Base color
+  complementary.push(baseHex);
+  
+  // Complementary color (180 degrees opposite)
   const compHue = (h + 180) % 360;
-  const complementaryHex = hslToHex(compHue, s, l);
-  complementaryColors.push(complementaryHex);
-  const { tint: compTint, shade: compShade } = getSingleTintAndShade(complementaryHex);
-  complementaryColors.push(compTint);
-  complementaryColors.push(compShade);
+  complementary.push(hslToHex(compHue, s, l));
   
-  return complementaryColors;
+  return complementary;
 };
 
 export const generateTriadic = (baseHex: string): string[] => {
