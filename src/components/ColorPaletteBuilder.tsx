@@ -52,7 +52,7 @@ export const ColorPaletteBuilder = () => {
         </Card>
 
         {/* Color Palette Grid */}
-        <div className="flex flex-col gap-6">
+        <div className="grid gap-6">
           {colors.length === 0 ? (
             <Card className="p-12 text-center shadow-soft border-0 bg-card/60 backdrop-blur-sm">
               <div className="text-muted-foreground">
