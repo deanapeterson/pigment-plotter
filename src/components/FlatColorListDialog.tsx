@@ -77,38 +77,40 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
             {viewAsJson ? <Code className="h-4 w-4" /> : <List className="h-4 w-4" />}
           </Toggle>
         </div>
-        {sortedColors.length === 0 ? (
-          <p className="text-muted-foreground text-center py-4">No colors in the palette to export.</p>
-        ) : (
-          viewAsJson ? (
-            <ScrollArea className="flex-1 rounded-md border p-4 bg-muted/20 font-mono text-sm cursor-pointer" onClick={handleCopyJson}>
-              <pre>{jsonOutput}</pre>
-            </ScrollArea>
+        <div className="flex-1 overflow-hidden"> {/* This div ensures the scrollable area takes up remaining space */}
+          {sortedColors.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">No colors in the palette to export.</p>
           ) : (
-            <ScrollArea className="flex-1 rounded-md border p-4 bg-muted/20">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                {sortedColors.map((color, index) => {
-                  const contrastColor = getContrastColor(color);
-                  return (
-                    <div
-                      key={index}
-                      className="aspect-square flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-transform duration-100 hover:scale-105 shadow-sm"
-                      style={{ backgroundColor: color, color: contrastColor }}
-                      title={`Click to copy ${color.toUpperCase()}`}
-                      onClick={() => {
-                        navigator.clipboard.writeText(color);
-                        toast.success(`${color.toUpperCase()} copied to clipboard!`);
-                      }}
-                    >
-                      {color.toUpperCase()}
-                    </div>
-                  );
-                })}
-              </div>
-            </ScrollArea>
-          )
-        )}
-        <DialogFooter className="flex-col sm:flex-row sm:justify-end gap-2 mt-4"> {/* Added mt-4 for spacing */}
+            viewAsJson ? (
+              <ScrollArea className="h-full w-full rounded-md border p-4 bg-muted/20 font-mono text-sm cursor-pointer" onClick={handleCopyJson}>
+                <pre>{jsonOutput}</pre>
+              </ScrollArea>
+            ) : (
+              <ScrollArea className="h-full w-full rounded-md border p-4 bg-muted/20">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                  {sortedColors.map((color, index) => {
+                    const contrastColor = getContrastColor(color);
+                    return (
+                      <div
+                        key={index}
+                        className="aspect-square flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-transform duration-100 hover:scale-105 shadow-sm"
+                        style={{ backgroundColor: color, color: contrastColor }}
+                        title={`Click to copy ${color.toUpperCase()}`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(color);
+                          toast.success(`${color.toUpperCase()} copied to clipboard!`);
+                        }}
+                      >
+                        {color.toUpperCase()}
+                      </div>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+            )
+          )}
+        </div>
+        <DialogFooter className="flex-col sm:flex-row sm:justify-end gap-2 mt-4">
           <Button onClick={handleCopyAll} disabled={sortedColors.length === 0} className="w-full sm:w-auto">
             <Copy className="w-4 h-4 mr-2" /> Copy {viewAsJson ? "JSON" : "All Colors"}
           </Button>
