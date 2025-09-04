@@ -45,8 +45,8 @@ export class PaletteService {
 
   private generateVariations(color: ColorData): void {
     this.data.variations[color.id] = {
-      tints: generateTints(color.hex, 8),
-      shades: generateShades(color.hex, 8),
+      tints: generateTints(color.hex, 5), // Changed from 8 to 5
+      shades: generateShades(color.hex, 5), // Changed from 8 to 5
       analogous: generateAnalogous(color.hex),
       complementary: generateComplementary(color.hex),
       triadic: generateTriadic(color.hex)
