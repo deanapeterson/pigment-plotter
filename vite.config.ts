@@ -19,7 +19,4 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  optimizeDeps: {
-    exclude: ['react-window'], // Exclude react-window from pre-bundling
-  },
 }));
