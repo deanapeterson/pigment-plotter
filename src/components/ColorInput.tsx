@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { isValidHex } from "@/lib/colorUtils";
+import { HexColorPicker } from "react-colorful"; // Import HexColorPicker
 
 interface ColorInputProps {
   onAddColor: (hex: string, name?: string) => void;
@@ -13,6 +14,7 @@ interface ColorInputProps {
 export const ColorInput = ({ onAddColor }: ColorInputProps) => {
   const [hexValue, setHexValue] = useState("");
   const [colorName, setColorName] = useState("");
+  const [showColorPicker, setShowColorPicker] = useState(false); // New state for color picker visibility
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,12 +34,30 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
     onAddColor(cleanHex, colorName || undefined);
     setHexValue("");
     setColorName("");
+    setShowColorPicker(false); // Close picker after adding color
   };
 
   const handleRandomColor = () => {
     const randomHex = "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
     setHexValue(randomHex);
+    setShowColorPicker(true); // Open picker when random color is generated
   };
+
+  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setHexValue(value);
+    // Optionally, open picker if a valid hex is being typed
+    if (isValidHex(value.startsWith("#") ? value : `#${value}`)) {
+      setShowColorPicker(true);
+    }
+  };
+
+  const handleColorPickerChange = (color: string) => {
+    setHexValue(color);
+  };
+
+  const currentHex = hexValue.startsWith("#") ? hexValue : `#${hexValue}`;
+  const isCurrentHexValid = isValidHex(currentHex);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -49,16 +69,24 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
               id="hex-input"
               placeholder="#FF5733 or FF5733"
               value={hexValue}
-              onChange={(e) => setHexValue(e.target.value)}
+              onChange={handleHexChange}
               className="pr-20"
             />
-            {hexValue && isValidHex(hexValue.startsWith("#") ? hexValue : `#${hexValue}`) && (
-              <div 
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-md border-2 border-border shadow-sm"
-                style={{ backgroundColor: hexValue.startsWith("#") ? hexValue : `#${hexValue}` }}
+            {isCurrentHexValid && (
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-md border-2 border-border shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                style={{ backgroundColor: currentHex }}
+                onClick={() => setShowColorPicker(!showColorPicker)} // Toggle picker visibility
+                aria-label="Open color picker"
               />
             )}
           </div>
+          {showColorPicker && isCurrentHexValid && (
+            <div className="mt-4 flex justify-center">
+              <HexColorPicker color={currentHex} onChange={handleColorPickerChange} className="w-full max-w-[200px]" />
+            </div>
+          )}
         </div>
         
         <div className="space-y-2">
