@@ -43,7 +43,7 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
 
   return (
     <Card className="overflow-hidden shadow-soft border-0 bg-card/60 backdrop-blur-sm hover:shadow-elegant transition-all duration-300">
-      <div className="flex min-h-[400px]">
+      <div className="flex"> {/* Removed min-h-[400px] */}
         {/* Primary Color Section - Left Side */}
         <div 
           className="w-64 p-6 text-center relative flex flex-col justify-center"
@@ -108,42 +108,33 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
             </div>
           ) : (
             <>
-              <h3 className="text-2xl font-bold mb-4">{color.name || "Unnamed Color"}</h3>
-              <div className="text-lg font-mono opacity-90 mb-6">{color.hex.toUpperCase()}</div>
+              <h3 className="text-2xl font-bold mb-2">{color.name || "Unnamed Color"}</h3> {/* Reduced mb-4 to mb-2 */}
+              <div className="text-lg font-mono opacity-90 mb-4">{color.hex.toUpperCase()}</div> {/* Reduced mb-6 to mb-4 */}
               
               {/* Color Format Information */}
-              <div className="space-y-3">
+              <div className="space-y-2"> {/* Reduced space-y-3 to space-y-2 */}
                 <div 
-                  className="cursor-pointer hover:bg-white/10 p-2 rounded-md transition-colors"
+                  className="cursor-pointer hover:bg-white/10 p-1 rounded-md transition-colors flex items-center justify-center" {/* Reduced p-2 to p-1, added flex */}
                   onClick={() => handleCopy(color.hex, "HEX")}
                 >
-                  <div className="text-sm opacity-70 mb-1">HEX</div>
-                  <div className="font-mono text-sm">
-                    <Copy className="w-3 h-3 inline mr-1" />
-                    {color.hex.toUpperCase()}
-                  </div>
+                  <Copy className="w-3 h-3 mr-1" /> {/* Removed inline */}
+                  <span className="font-mono text-sm">HEX: {color.hex.toUpperCase()}</span>
                 </div>
                 
                 <div 
-                  className="cursor-pointer hover:bg-white/10 p-2 rounded-md transition-colors"
+                  className="cursor-pointer hover:bg-white/10 p-1 rounded-md transition-colors flex items-center justify-center"
                   onClick={() => handleCopy(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, "RGB")}
                 >
-                  <div className="text-sm opacity-70 mb-1">RGB</div>
-                  <div className="font-mono text-sm">
-                    <Copy className="w-3 h-3 inline mr-1" />
-                    {rgb.r}, {rgb.g}, {rgb.b}
-                  </div>
+                  <Copy className="w-3 h-3 mr-1" />
+                  <span className="font-mono text-sm">RGB: {rgb.r}, {rgb.g}, {rgb.b}</span>
                 </div>
                 
                 <div 
-                  className="cursor-pointer hover:bg-white/10 p-2 rounded-md transition-colors"
+                  className="cursor-pointer hover:bg-white/10 p-1 rounded-md transition-colors flex items-center justify-center"
                   onClick={() => handleCopy(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`, "HSL")}
                 >
-                  <div className="text-sm opacity-70 mb-1">HSL</div>
-                  <div className="font-mono text-sm">
-                    <Copy className="w-3 h-3 inline mr-1" />
-                    {hsl.h}°, {hsl.s}%, {hsl.l}%
-                  </div>
+                  <Copy className="w-3 h-3 mr-1" />
+                  <span className="font-mono text-sm">HSL: {hsl.h}°, {hsl.s}%, {hsl.l}%</span>
                 </div>
               </div>
             </>
