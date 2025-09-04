@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { FixedSizeGrid } from "react-window"; // Import FixedSizeGrid
+import ReactWindow from "react-window"; // Import the default export
+const { FixedSizeGrid } = ReactWindow; // Destructure FixedSizeGrid from it
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-// Removed ScrollArea import as FixedSizeGrid handles its own scrolling
 import { Copy, List, Code } from "lucide-react";
 import { toast } from "sonner";
 import { getContrastColor, hexToHsl } from "@/lib/colorUtils";
