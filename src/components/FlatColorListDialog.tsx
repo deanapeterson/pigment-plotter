@@ -77,7 +77,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
             {viewAsJson ? <Code className="h-4 w-4" /> : <List className="h-4 w-4" />}
           </Toggle>
         </div>
-        <div className="flex-1 overflow-hidden"> {/* This div ensures the scrollable area takes up remaining space */}
+        <div className="flex-1 overflow-hidden min-h-0"> {/* Added min-h-0 here */}
           {sortedColors.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">No colors in the palette to export.</p>
           ) : (
