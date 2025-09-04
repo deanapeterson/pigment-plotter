@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"; // Import ScrollBar
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Copy, List, Code } from "lucide-react";
 import { toast } from "sonner";
 import { getContrastColor, hexToHsl } from "@/lib/colorUtils";
@@ -84,7 +84,6 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
             viewAsJson ? (
               <ScrollArea className="h-full w-full rounded-md border p-4 bg-muted/20 font-mono text-sm cursor-pointer" onClick={handleCopyJson}>
                 <pre>{jsonOutput}</pre>
-                <ScrollBar /> {/* Added ScrollBar */}
               </ScrollArea>
             ) : (
               <ScrollArea className="h-full w-full rounded-md border p-4 bg-muted/20">
@@ -107,7 +106,6 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
                     );
                   })}
                 </div>
-                <ScrollBar /> {/* Added ScrollBar */}
               </ScrollArea>
             )
           )}
