@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Palette, Download } from "lucide-react";
@@ -12,10 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Import DropdownMenu components
+} from "@/components/ui/dropdown-menu";
+import { FlatColorListDialog } from "./FlatColorListDialog"; // Import the new dialog
 
 export const ColorPaletteBuilder = () => {
-  const { colors, addColor, removeColor, updateColor, downloadJson, downloadFlatColors, getVariations } = usePaletteService();
+  const { colors, addColor, removeColor, updateColor, downloadJson, downloadFlatColors, exportFlatColors, getVariations } = usePaletteService();
+  const [isFlatListDialogOpen, setIsFlatListDialogOpen] = useState(false);
+  const [flatColorsToDisplay, setFlatColorsToDisplay] = useState<string[]>([]);
 
   const handleExportFullPalette = () => {
     downloadJson();
@@ -23,8 +26,17 @@ export const ColorPaletteBuilder = () => {
   };
 
   const handleExportFlatList = () => {
+    const flatColors = exportFlatColors();
+    setFlatColorsToDisplay(flatColors);
+    setIsFlatListDialogOpen(true);
+    // The actual download will happen if the user clicks "Download JSON" inside the dialog,
+    // or they can copy the list.
+  };
+
+  const handleDownloadFlatListFromDialog = () => {
     downloadFlatColors();
-    toast("Flat list of colors exported successfully!");
+    toast("Flat list of colors downloaded successfully!");
+    setIsFlatListDialogOpen(false); // Close dialog after download
   };
 
   return (
@@ -45,7 +57,7 @@ export const ColorPaletteBuilder = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleExportFlatList}>
-                Export Flat List (JSON)
+                Preview & Download Flat List
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -101,6 +113,13 @@ export const ColorPaletteBuilder = () => {
           )}
         </div>
       </div>
+
+      {/* Flat Color List Dialog */}
+      <FlatColorListDialog
+        open={isFlatListDialogOpen}
+        onOpenChange={setIsFlatListDialogOpen}
+        colors={flatColorsToDisplay}
+      />
     </div>
   );
 };
