@@ -46,7 +46,7 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
       <div className="flex min-h-[400px]">
         {/* Primary Color Section - Left Side */}
         <div 
-          className="w-80 p-6 text-center relative flex flex-col justify-center"
+          className="w-64 p-6 text-center relative flex flex-col justify-center" {/* Changed w-80 to w-64 */}
           style={{ backgroundColor: color.hex, color: contrastColor }}
         >
           <div className="absolute top-4 right-4 flex gap-2">
