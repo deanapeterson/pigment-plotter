@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Plus, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { isValidHex } from "@/lib/colorUtils";
-import { HexColorPicker } from "react-colorful"; // Import HexColorPicker
+import { HexColorPicker } from "react-colorful";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"; // Import Popover components
 
 interface ColorInputProps {
   onAddColor: (hex: string, name?: string) => void;
@@ -14,7 +15,7 @@ interface ColorInputProps {
 export const ColorInput = ({ onAddColor }: ColorInputProps) => {
   const [hexValue, setHexValue] = useState("");
   const [colorName, setColorName] = useState("");
-  const [showColorPicker, setShowColorPicker] = useState(false); // New state for color picker visibility
+  const [isPickerOpen, setIsPickerOpen] = useState(false); // State to control Popover visibility
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,13 +35,13 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
     onAddColor(cleanHex, colorName || undefined);
     setHexValue("");
     setColorName("");
-    setShowColorPicker(false); // Close picker after adding color
+    setIsPickerOpen(false); // Close picker after adding color
   };
 
   const handleRandomColor = () => {
     const randomHex = "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
     setHexValue(randomHex);
-    setShowColorPicker(true); // Open picker when random color is generated
+    setIsPickerOpen(true); // Open picker when random color is generated
   };
 
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +49,7 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
     setHexValue(value);
     // Optionally, open picker if a valid hex is being typed
     if (isValidHex(value.startsWith("#") ? value : `#${value}`)) {
-      setShowColorPicker(true);
+      setIsPickerOpen(true);
     }
   };
 
@@ -73,20 +74,21 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
               className="pr-20"
             />
             {isCurrentHexValid && (
-              <button
-                type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-md border-2 border-border shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                style={{ backgroundColor: currentHex }}
-                onClick={() => setShowColorPicker(!showColorPicker)} // Toggle picker visibility
-                aria-label="Open color picker"
-              />
+              <Popover open={isPickerOpen} onOpenChange={setIsPickerOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-md border-2 border-border shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    style={{ backgroundColor: currentHex }}
+                    aria-label="Open color picker"
+                  />
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <HexColorPicker color={currentHex} onChange={handleColorPickerChange} />
+                </PopoverContent>
+              </Popover>
             )}
           </div>
-          {showColorPicker && isCurrentHexValid && (
-            <div className="mt-4 flex justify-center">
-              <HexColorPicker color={currentHex} onChange={handleColorPickerChange} className="w-full max-w-[200px]" />
-            </div>
-          )}
         </div>
         
         <div className="space-y-2">
