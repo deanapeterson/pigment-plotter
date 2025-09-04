@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Copy, List, Code } from "lucide-react"; // Added Code icon
+import { Copy, List, Code } from "lucide-react";
 import { toast } from "sonner";
 import { getContrastColor, hexToHsl } from "@/lib/colorUtils";
-import { Toggle } from "@/components/ui/toggle"; // Import Toggle component
-import { Label } from "@/components/ui/label"; // Import Label component
+import { Toggle } from "@/components/ui/toggle";
+import { Label } from "@/components/ui/label";
 
 interface FlatColorListDialogProps {
   open: boolean;
@@ -47,6 +47,15 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
     toast.success(`${viewAsJson ? "JSON list" : "All colors"} copied to clipboard!`);
   };
 
+  const handleCopyJson = () => {
+    if (jsonOutput.length === 0) {
+      toast.info("No JSON to copy.");
+      return;
+    }
+    navigator.clipboard.writeText(jsonOutput);
+    toast.success("JSON list copied to clipboard!");
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col">
@@ -73,7 +82,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
             <p className="text-muted-foreground text-center">No colors in the palette to export.</p>
           ) : (
             viewAsJson ? (
-              <ScrollArea className="h-full w-full rounded-md border p-4 bg-muted/20 font-mono text-sm">
+              <ScrollArea className="h-full w-full rounded-md border p-4 bg-muted/20 font-mono text-sm cursor-pointer" onClick={handleCopyJson}>
                 <pre>{jsonOutput}</pre>
               </ScrollArea>
             ) : (
