@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Plus, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { isValidHex } from "@/lib/colorUtils";
-import { HexColorPicker } from "react-colorful"; // Import HexColorPicker
 
 interface ColorInputProps {
   onAddColor: (hex: string, name?: string) => void;
@@ -59,10 +58,6 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
                 style={{ backgroundColor: hexValue.startsWith("#") ? hexValue : `#${hexValue}` }}
               />
             )}
-          </div>
-          {/* Color Picker Widget */}
-          <div className="flex justify-center pt-4">
-            <HexColorPicker color={hexValue} onChange={setHexValue} className="w-full max-w-[200px]" />
           </div>
         </div>
         
