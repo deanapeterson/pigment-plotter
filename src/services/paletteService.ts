@@ -1,4 +1,4 @@
-import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary, areColorsSimilar } from "@/lib/colorUtils";
+import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary, areColorsSimilar, hexToHsl } from "@/lib/colorUtils";
 
 export interface ColorData {
   id: string;
@@ -21,6 +21,7 @@ export interface PaletteData {
   name: string;
   baseColors: ColorData[];
   variations: Record<string, ColorVariations>;
+  flatColors: string[]; // Added flatColors to the interface
 }
 
 interface AllPalettesData {
@@ -66,13 +67,17 @@ export class PaletteService {
           this.allPalettes = parsedData.palettes;
           this.activePaletteName = parsedData.activePaletteName;
 
-          // Regenerate variations for any missing ones or new harmony types
+          // Ensure all palettes have the flatColors property and regenerate variations if needed
           Object.values(this.allPalettes).forEach(palette => {
+            if (!palette.flatColors) {
+              palette.flatColors = []; // Initialize if missing from older data
+            }
             palette.baseColors.forEach(color => {
               if (!palette.variations[color.id] || Object.keys(palette.variations[color.id]).length < 7) { // Check if all 7 harmonies are present
                 this.generateVariations(color, palette);
               }
             });
+            this._updateFlatColors(palette); // Update flat colors after ensuring variations are present
           });
         }
       }
@@ -108,6 +113,7 @@ export class PaletteService {
       name: name,
       baseColors: [],
       variations: {},
+      flatColors: [], // Initialize flatColors for new palettes
     };
     this.activePaletteName = name;
     this.saveAllPalettes();
@@ -147,10 +153,7 @@ export class PaletteService {
     delete this.allPalettes[name];
 
     if (wasActive) {
-      // After deleting the active palette, always switch to a new default palette
-      // regardless of how many other palettes exist.
       const newDefaultName = DEFAULT_PALETTE_NAME;
-      // Ensure the new default name is unique if a palette with that exact name exists
       let finalNewDefaultName = newDefaultName;
       let counter = 1;
       while (this.allPalettes[finalNewDefaultName]) {
@@ -160,13 +163,10 @@ export class PaletteService {
       this.createPalette(finalNewDefaultName);
       this.activePaletteName = finalNewDefaultName;
     } else if (this.activePaletteName === null || !this.allPalettes[this.activePaletteName]) {
-       // Fallback safety check, though 'wasActive' should cover the main case
        const remainingNames = Object.keys(this.allPalettes);
        if (remainingNames.length > 0) {
           this.activePaletteName = remainingNames[0];
        } else {
-          // This case should ideally not be reached due to the createPalette above,
-          // but included for robustness.
           this.createPalette(DEFAULT_PALETTE_NAME);
           this.activePaletteName = DEFAULT_PALETTE_NAME;
        }
@@ -180,7 +180,6 @@ export class PaletteService {
   setPaletteNameForActive(name: string): void {
     const activePalette = this.getActivePalette();
     if (activePalette.name !== name) {
-      // If the name is actually changing, we need to handle the key in allPalettes
       const oldName = activePalette.name;
       if (this.allPalettes[name]) {
         console.warn(`Palette with name '${name}' already exists. Cannot rename active palette to a duplicate name.`);
@@ -200,18 +199,16 @@ export class PaletteService {
 
   addColor(color: ColorData): boolean {
     const activePalette = this.getActivePalette();
-    // Check for exact hex match first
     if (activePalette.baseColors.some(c => c.hex.toLowerCase() === color.hex.toLowerCase())) {
-      return false; // Exact duplicate, do not add
+      return false;
     }
-
-    // Check for perceptual similarity
     if (activePalette.baseColors.some(c => areColorsSimilar(c.hex, color.hex))) {
-      return false; // Perceptually similar, do not add
+      return false;
     }
 
     activePalette.baseColors.push(color);
     this.generateVariations(color, activePalette);
+    this._updateFlatColors(activePalette); // Update flat colors after adding
     this.saveAllPalettes();
     return true;
   }
@@ -220,6 +217,7 @@ export class PaletteService {
     const activePalette = this.getActivePalette();
     activePalette.baseColors = activePalette.baseColors.filter(color => color.id !== id);
     delete activePalette.variations[id];
+    this._updateFlatColors(activePalette); // Update flat colors after removing
     this.saveAllPalettes();
   }
 
@@ -229,6 +227,7 @@ export class PaletteService {
     if (colorIndex !== -1) {
       activePalette.baseColors[colorIndex] = { id, hex, name };
       this.generateVariations({ id, hex, name }, activePalette);
+      this._updateFlatColors(activePalette); // Update flat colors after updating
       this.saveAllPalettes();
     }
   }
@@ -246,6 +245,26 @@ export class PaletteService {
     };
   }
 
+  // New private method to update the flatColors array
+  private _updateFlatColors(palette: PaletteData): void {
+    const uniqueColors = new Set<string>();
+
+    palette.baseColors.forEach(color => uniqueColors.add(color.hex.toUpperCase()));
+
+    Object.values(palette.variations).forEach(variationSet => {
+      Object.values(variationSet).forEach(colorsArray => {
+        colorsArray.forEach(colorHex => uniqueColors.add(colorHex.toUpperCase()));
+      });
+    });
+
+    // Sort colors by hue for consistent display
+    palette.flatColors = Array.from(uniqueColors).sort((a, b) => {
+      const hslA = hexToHsl(a);
+      const hslB = hexToHsl(b);
+      return hslA.h - hslB.h;
+    });
+  }
+
   getColors(): ColorData[] {
     return this.getActivePalette().baseColors;
   }
@@ -261,7 +280,8 @@ export class PaletteService {
         name: activePalette.name,
         createdAt: new Date().toISOString(),
         baseColors: activePalette.baseColors,
-        variations: activePalette.variations
+        variations: activePalette.variations,
+        flatColors: activePalette.flatColors, // Include flatColors in export
       }
     };
     return JSON.stringify(exportData, null, 2);
@@ -282,18 +302,7 @@ export class PaletteService {
   }
 
   exportFlatColors(): string[] {
-    const activePalette = this.getActivePalette();
-    const uniqueColors = new Set<string>();
-
-    activePalette.baseColors.forEach(color => uniqueColors.add(color.hex.toUpperCase()));
-
-    Object.values(activePalette.variations).forEach(variationSet => {
-      Object.values(variationSet).forEach(colorsArray => {
-        colorsArray.forEach(colorHex => uniqueColors.add(colorHex.toUpperCase()));
-      });
-    });
-
-    return Array.from(uniqueColors);
+    return this.getActivePalette().flatColors; // Now returns the stored flatColors
   }
 
   downloadFlatColors(): void {
@@ -323,14 +332,16 @@ export class PaletteService {
           name: newPaletteName,
           baseColors: importData.palette.baseColors,
           variations: importData.palette.variations || {},
+          flatColors: importData.palette.flatColors || [], // Load flatColors if present, otherwise initialize
         };
 
-        // Ensure all variations are generated for imported colors
+        // Ensure all variations are generated for imported colors and then update flat colors
         importedPalette.baseColors.forEach(color => {
           if (!importedPalette.variations[color.id]) {
             this.generateVariations(color, importedPalette);
           }
         });
+        this._updateFlatColors(importedPalette); // Always re-calculate flat colors on import to ensure consistency
 
         this.allPalettes[newPaletteName] = importedPalette;
         this.activePaletteName = newPaletteName;
