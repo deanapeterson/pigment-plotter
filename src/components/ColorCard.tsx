@@ -142,7 +142,7 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
         </div>
 
         {/* Color Variations - Right Side */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-4"> {/* Reduced p-6 to p-4 */}
           {variations ? (
             <ColorVariations baseColor={color.hex} variations={variations} />
           ) : (
