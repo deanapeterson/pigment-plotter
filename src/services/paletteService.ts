@@ -1,4 +1,4 @@
-import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic } from "@/lib/colorUtils";
+import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary } from "@/lib/colorUtils";
 
 export interface ColorData {
   id: string;
@@ -12,6 +12,9 @@ export interface ColorVariations {
   analogous: string[];
   complementary: string[];
   triadic: string[];
+  square: string[]; // New harmony
+  tetradic: string[]; // New harmony
+  splitComplementary: string[]; // New harmony
 }
 
 export interface PaletteData {
@@ -45,11 +48,14 @@ export class PaletteService {
 
   private generateVariations(color: ColorData): void {
     this.data.variations[color.id] = {
-      tints: generateTints(color.hex, 5), // Changed from 8 to 5
-      shades: generateShades(color.hex, 5), // Changed from 8 to 5
+      tints: generateTints(color.hex, 5),
+      shades: generateShades(color.hex, 5),
       analogous: generateAnalogous(color.hex),
       complementary: generateComplementary(color.hex),
-      triadic: generateTriadic(color.hex)
+      triadic: generateTriadic(color.hex),
+      square: generateSquare(color.hex), // Generate new harmony
+      tetradic: generateTetradic(color.hex), // Generate new harmony
+      splitComplementary: generateSplitComplementary(color.hex) // Generate new harmony
     };
   }
 

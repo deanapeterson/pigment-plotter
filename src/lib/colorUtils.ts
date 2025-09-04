@@ -165,3 +165,39 @@ export const generateTriadic = (baseHex: string): string[] => {
   
   return triadic;
 };
+
+export const generateSquare = (baseHex: string): string[] => {
+  const { h, s, l } = hexToHsl(baseHex);
+  const square: string[] = [];
+
+  for (let i = 0; i < 4; i++) {
+    const hue = (h + (i * 90)) % 360;
+    square.push(hslToHex(hue, s, l));
+  }
+
+  return square;
+};
+
+export const generateTetradic = (baseHex: string): string[] => {
+  const { h, s, l } = hexToHsl(baseHex);
+  const tetradic: string[] = [];
+
+  // Two complementary pairs
+  tetradic.push(baseHex); // Color 1
+  tetradic.push(hslToHex((h + 60) % 360, s, l)); // Color 2 (60 degrees from base)
+  tetradic.push(hslToHex((h + 180) % 360, s, l)); // Color 3 (complement of base)
+  tetradic.push(hslToHex((h + 240) % 360, s, l)); // Color 4 (complement of color 2)
+
+  return tetradic;
+};
+
+export const generateSplitComplementary = (baseHex: string): string[] => {
+  const { h, s, l } = hexToHsl(baseHex);
+  const splitComplementary: string[] = [];
+
+  splitComplementary.push(baseHex); // Base color
+  splitComplementary.push(hslToHex((h + 150) % 360, s, l)); // Color 1 (150 degrees from base)
+  splitComplementary.push(hslToHex((h + 210) % 360, s, l)); // Color 2 (210 degrees from base)
+
+  return splitComplementary;
+};
