@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; // Import useEffect
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,22 +16,6 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
   const [hexValue, setHexValue] = useState("");
   const [colorName, setColorName] = useState("");
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-
-  // Effect to manage picker visibility based on hexValue validity
-  useEffect(() => {
-    const cleanHex = hexValue.startsWith("#") ? hexValue : `#${hexValue}`;
-    if (isValidHex(cleanHex)) {
-      // Only open if it's not already open and the input is valid
-      if (!isPickerOpen) {
-        setIsPickerOpen(true);
-      }
-    } else {
-      // Close if input becomes invalid
-      if (isPickerOpen) {
-        setIsPickerOpen(false);
-      }
-    }
-  }, [hexValue, isPickerOpen]); // Depend on hexValue and isPickerOpen
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,13 +46,13 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
   const handleRandomColor = () => {
     const randomHex = "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
     setHexValue(randomHex);
-    // The useEffect will handle opening the picker if the random hex is valid
+    // Do not automatically open picker here, user can click the block if they want to adjust
   };
 
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setHexValue(value);
-    // useEffect now handles opening/closing the picker
+    // Do not automatically open picker here
   };
 
   const handleColorPickerChange = (color: string) => {
