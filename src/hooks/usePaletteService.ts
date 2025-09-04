@@ -5,14 +5,17 @@ export const usePaletteService = () => {
   const [paletteService] = useState(() => new PaletteService());
   const [colors, setColors] = useState<ColorData[]>([]);
 
-  const addColor = useCallback((hex: string, name?: string) => {
+  const addColor = useCallback((hex: string, name?: string): boolean => {
     const newColor: ColorData = {
       id: crypto.randomUUID(),
       hex,
       name,
     };
-    paletteService.addColor(newColor);
-    setColors([...paletteService.getColors()]); // Create a new array reference
+    const success = paletteService.addColor(newColor);
+    if (success) {
+      setColors([...paletteService.getColors()]); // Create a new array reference
+    }
+    return success;
   }, [paletteService]);
 
   const removeColor = useCallback((id: string) => {

@@ -1,4 +1,4 @@
-import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary } from "@/lib/colorUtils";
+import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary, areColorsSimilar } from "@/lib/colorUtils";
 
 export interface ColorData {
   id: string;
@@ -28,9 +28,20 @@ export class PaletteService {
     variations: {}
   };
 
-  addColor(color: ColorData): void {
+  addColor(color: ColorData): boolean {
+    // Check for exact hex match first
+    if (this.data.baseColors.some(c => c.hex.toLowerCase() === color.hex.toLowerCase())) {
+      return false; // Exact duplicate, do not add
+    }
+
+    // Check for perceptual similarity
+    if (this.data.baseColors.some(c => areColorsSimilar(c.hex, color.hex))) {
+      return false; // Perceptually similar, do not add
+    }
+
     this.data.baseColors.push(color);
     this.generateVariations(color);
+    return true; // Color added successfully
   }
 
   removeColor(id: string): void {

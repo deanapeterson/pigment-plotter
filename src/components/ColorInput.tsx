@@ -9,7 +9,7 @@ import { HexColorPicker } from "react-colorful";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface ColorInputProps {
-  onAddColor: (hex: string, name?: string) => void;
+  onAddColor: (hex: string, name?: string) => boolean;
 }
 
 export const ColorInput = ({ onAddColor }: ColorInputProps) => {
@@ -32,10 +32,15 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
       return;
     }
 
-    onAddColor(cleanHex, colorName || undefined);
-    setHexValue("");
-    setColorName("");
-    setIsPickerOpen(false); // Close picker after adding color
+    const success = onAddColor(cleanHex, colorName || undefined);
+    if (success) {
+      setHexValue("");
+      setColorName("");
+      setIsPickerOpen(false); // Close picker after adding color
+      toast.success("Color added successfully!");
+    } else {
+      toast.warning("This color is too similar to an existing color or is a duplicate.");
+    }
   };
 
   const handleRandomColor = () => {
