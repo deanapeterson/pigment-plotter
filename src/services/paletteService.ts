@@ -28,7 +28,7 @@ interface AllPalettesData {
   activePaletteName: string | null;
 }
 
-const LOCAL_STORAGE_KEY = "color-palette-builder-all-palettes";
+const LOCAL_STORAGE_KEY = "color-palette-builder-all-palette";
 const DEFAULT_PALETTE_NAME = "My Awesome Palette";
 
 export class PaletteService {
@@ -143,14 +143,33 @@ export class PaletteService {
     if (!this.allPalettes[name]) {
       return false; // Palette not found
     }
+    const wasActive = this.activePaletteName === name;
     delete this.allPalettes[name];
 
-    if (this.activePaletteName === name) {
-      const paletteNames = Object.keys(this.allPalettes);
-      this.activePaletteName = paletteNames.length > 0 ? paletteNames[0] : null;
-      if (!this.activePaletteName) {
-        this.createPalette(DEFAULT_PALETTE_NAME); // Create a new default if no palettes left
+    if (wasActive) {
+      // After deleting the active palette, always switch to a new default palette
+      // regardless of how many other palettes exist.
+      const newDefaultName = DEFAULT_PALETTE_NAME;
+      // Ensure the new default name is unique if a palette with that exact name exists
+      let finalNewDefaultName = newDefaultName;
+      let counter = 1;
+      while (this.allPalettes[finalNewDefaultName]) {
+         finalNewDefaultName = `${newDefaultName} ${counter}`;
+         counter++;
       }
+      this.createPalette(finalNewDefaultName);
+      this.activePaletteName = finalNewDefaultName;
+    } else if (this.activePaletteName === null || !this.allPalettes[this.activePaletteName]) {
+       // Fallback safety check, though 'wasActive' should cover the main case
+       const remainingNames = Object.keys(this.allPalettes);
+       if (remainingNames.length > 0) {
+          this.activePaletteName = remainingNames[0];
+       } else {
+          // This case should ideally not be reached due to the createPalette above,
+          // but included for robustness.
+          this.createPalette(DEFAULT_PALETTE_NAME);
+          this.activePaletteName = DEFAULT_PALETTE_NAME;
+       }
     }
     this.saveAllPalettes();
     return true;
