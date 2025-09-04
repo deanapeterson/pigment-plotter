@@ -6,7 +6,7 @@ import { Plus, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { isValidHex } from "@/lib/colorUtils";
 import { HexColorPicker } from "react-colorful";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"; // Import Popover components
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface ColorInputProps {
   onAddColor: (hex: string, name?: string) => void;
@@ -15,7 +15,7 @@ interface ColorInputProps {
 export const ColorInput = ({ onAddColor }: ColorInputProps) => {
   const [hexValue, setHexValue] = useState("");
   const [colorName, setColorName] = useState("");
-  const [isPickerOpen, setIsPickerOpen] = useState(false); // State to control Popover visibility
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,16 +41,13 @@ export const ColorInput = ({ onAddColor }: ColorInputProps) => {
   const handleRandomColor = () => {
     const randomHex = "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
     setHexValue(randomHex);
-    setIsPickerOpen(true); // Open picker when random color is generated
+    // Do not automatically open picker here, user can click the block if they want to adjust
   };
 
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setHexValue(value);
-    // Optionally, open picker if a valid hex is being typed
-    if (isValidHex(value.startsWith("#") ? value : `#${value}`)) {
-      setIsPickerOpen(true);
-    }
+    // Do not automatically open picker here
   };
 
   const handleColorPickerChange = (color: string) => {
