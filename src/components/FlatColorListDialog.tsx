@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import ReactWindow from "react-window"; // Import the default export
-const { FixedSizeGrid } = ReactWindow; // Destructure FixedSizeGrid from it
+import { FixedSizeGrid } from "react-window"; // Reverted to named import
 import {
   Dialog,
   DialogContent,
