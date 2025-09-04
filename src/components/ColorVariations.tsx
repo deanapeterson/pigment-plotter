@@ -22,13 +22,13 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   };
 
   const ColorStrip = ({ colors, title }: { colors: string[]; title: string }) => (
-    <div className="space-y-1">
-      <Badge variant="secondary" className="text-xs">{title}</Badge>
-      <div className="grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
+    <div className="flex items-center gap-2"> {/* Changed to flex container */}
+      <Badge variant="secondary" className="text-xs min-w-[80px] justify-center">{title}</Badge> {/* Added min-w and justify-center */}
+      <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
         {colors.map((color, index) => (
           <div
             key={index}
-            className="aspect-2/1 cursor-pointer hover:scale-105 transition-transform duration-200 relative group" // Changed aspect-square to aspect-2/1
+            className="aspect-2/1 cursor-pointer hover:scale-105 transition-transform duration-200 relative group"
             style={{ backgroundColor: color }}
             onClick={() => handleCopy(color)}
             title={color}
@@ -50,13 +50,13 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
     }
 
     return (
-      <div className="space-y-1">
-        <Badge variant="secondary" className="text-xs">{title}</Badge>
-        <div className="grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
+      <div className="flex items-center gap-2"> {/* Changed to flex container */}
+        <Badge variant="secondary" className="text-xs min-w-[80px] justify-center">{title}</Badge> {/* Added min-w and justify-center */}
+        <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
           {paddedColors.map((color, index) => (
             <div
               key={index}
-              className={`aspect-2/1 transition-transform duration-200 relative group ${ // Changed aspect-square to aspect-2/1
+              className={`aspect-2/1 transition-transform duration-200 relative group ${
                 color === 'transparent' ? 'cursor-default' : 'cursor-pointer hover:scale-105'
               }`}
               style={{ backgroundColor: color === 'transparent' ? 'transparent' : color }}
