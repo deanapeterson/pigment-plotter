@@ -22,8 +22,8 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   };
 
   const ColorStrip = ({ colors, title }: { colors: string[]; title: string }) => (
-    <div className="flex items-center gap-2"> {/* Changed to flex container */}
-      <Badge variant="secondary" className="text-xs min-w-[80px] justify-center">{title}</Badge> {/* Added min-w and justify-center */}
+    <div className="flex items-center gap-2">
+      <Badge variant="secondary" className="text-xs w-[80px] text-center text-wrap">{title}</Badge> {/* Changed min-w to w and added text-wrap */}
       <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
         {colors.map((color, index) => (
           <div
@@ -50,8 +50,8 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
     }
 
     return (
-      <div className="flex items-center gap-2"> {/* Changed to flex container */}
-        <Badge variant="secondary" className="text-xs min-w-[80px] justify-center">{title}</Badge> {/* Added min-w and justify-center */}
+      <div className="flex items-center gap-2">
+        <Badge variant="secondary" className="text-xs w-[80px] text-center text-wrap">{title}</Badge> {/* Changed min-w to w and added text-wrap */}
         <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
           {paddedColors.map((color, index) => (
             <div
