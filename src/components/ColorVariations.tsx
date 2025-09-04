@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import { Copy } from "lucide-react";
-import { toast } from "sonner";
+// Removed Copy icon import
+// Removed toast import
 import { generateTints, generateShades, generateAnalogous, generateComplementary } from "@/lib/colorUtils";
 import { ColorVariations as ColorVariationsType } from "@/services/paletteService";
 
@@ -16,26 +16,21 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   const analogous = variations?.analogous || generateAnalogous(baseColor);
   const complementary = variations?.complementary || generateComplementary(baseColor);
 
-  const handleCopy = (color: string) => {
-    navigator.clipboard.writeText(color);
-    toast(`${color} copied to clipboard!`);
-  };
+  // Removed handleCopy function
 
   const ColorStrip = ({ colors, title }: { colors: string[]; title: string }) => (
     <div className="flex items-center gap-2">
-      <Badge variant="secondary" className="text-xs w-[120px] text-center text-wrap">{title}</Badge> {/* Increased width to 120px */}
+      <Badge variant="secondary" className="text-xs w-[120px] text-center text-wrap">{title}</Badge>
       <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
         {colors.map((color, index) => (
           <div
             key={index}
-            className="aspect-2/1 cursor-pointer hover:scale-105 transition-transform duration-200 relative group"
+            className="aspect-2/1 relative group" // Removed cursor-pointer and hover effects
             style={{ backgroundColor: color }}
-            onClick={() => handleCopy(color)}
+            // Removed onClick handler
             title={color}
           >
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-              <Copy className="w-3 h-3 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            </div>
+            {/* Removed Copy icon and its container */}
           </div>
         ))}
       </div>
@@ -51,23 +46,19 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
 
     return (
       <div className="flex items-center gap-2">
-        <Badge variant="secondary" className="text-xs w-[120px] text-center text-wrap">{title}</Badge> {/* Increased width to 120px */}
+        <Badge variant="secondary" className="text-xs w-[120px] text-center text-wrap">{title}</Badge>
         <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
           {paddedColors.map((color, index) => (
             <div
               key={index}
-              className={`aspect-2/1 transition-transform duration-200 relative group ${
-                color === 'transparent' ? 'cursor-default' : 'cursor-pointer hover:scale-105'
+              className={`aspect-2/1 relative group ${
+                color === 'transparent' ? 'cursor-default' : '' // Removed hover effects
               }`}
               style={{ backgroundColor: color === 'transparent' ? 'transparent' : color }}
-              onClick={() => color !== 'transparent' && handleCopy(color)}
+              // Removed onClick handler
               title={color === 'transparent' ? '' : color}
             >
-              {color !== 'transparent' && (
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-                  <Copy className="w-3 h-3 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                </div>
-              )}
+              {/* Removed Copy icon and its container */}
             </div>
           ))}
         </div>
