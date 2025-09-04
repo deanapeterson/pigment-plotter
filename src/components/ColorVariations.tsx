@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
-import { generateTints, generateShades, generateAnalogous, generateComplementary, getContrastColor } from "@/lib/colorUtils"; // Added getContrastColor
+import { generateTints, generateShades, generateAnalogous, generateComplementary } from "@/lib/colorUtils";
 import { ColorVariations as ColorVariationsType } from "@/services/paletteService";
 
 interface ColorVariationsProps {
@@ -22,14 +22,8 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   };
 
   const ColorStrip = ({ colors, title }: { colors: string[]; title: string }) => (
-    <div className="flex items-center gap-2">
-      {/* Replaced Badge with a styled div */}
-      <div 
-        className="min-w-[80px] aspect-2/1 rounded-lg flex items-center justify-center text-xs font-medium shadow-sm"
-        style={{ backgroundColor: baseColor, color: getContrastColor(baseColor) }}
-      >
-        {title}
-      </div>
+    <div className="flex items-center gap-2"> {/* Changed to flex container */}
+      <Badge variant="secondary" className="text-xs min-w-[80px] justify-center">{title}</Badge> {/* Added min-w and justify-center */}
       <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
         {colors.map((color, index) => (
           <div
@@ -56,14 +50,8 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
     }
 
     return (
-      <div className="flex items-center gap-2">
-        {/* Replaced Badge with a styled div */}
-        <div 
-          className="min-w-[80px] aspect-2/1 rounded-lg flex items-center justify-center text-xs font-medium shadow-sm"
-          style={{ backgroundColor: baseColor, color: getContrastColor(baseColor) }}
-        >
-          {title}
-        </div>
+      <div className="flex items-center gap-2"> {/* Changed to flex container */}
+        <Badge variant="secondary" className="text-xs min-w-[80px] justify-center">{title}</Badge> {/* Added min-w and justify-center */}
         <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
           {paddedColors.map((color, index) => (
             <div
