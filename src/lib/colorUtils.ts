@@ -101,16 +101,14 @@ export const generateTints = (baseHex: string, count: number): string[] => {
   const { h, s, l } = hexToHsl(baseHex);
   const tints: string[] = [];
   
-  // Target max lightness to avoid pure white (100%)
-  const targetMaxL = 99; 
+  // Calculate target max lightness, limiting to 80% of the range from base to 100%, and not exceeding 99%
+  const targetMaxL = Math.min(99, l + (100 - l) * 0.8); 
 
   for (let i = 0; i < count; i++) {
-    // Calculate lightness, ensuring it doesn't exceed targetMaxL
     const lightness = l + ((targetMaxL - l) * (i / (count - 1)));
-    tints.push(hslToHex(h, s, Math.min(100, Math.max(0, lightness)))); // Ensure it stays within 0-100 range
+    tints.push(hslToHex(h, s, Math.min(100, Math.max(0, lightness))));
   }
   
-  // Filter out pure white if it somehow made it through (e.g., base color was white)
   return tints.filter(hex => hex.toLowerCase() !== '#ffffff');
 };
 
@@ -118,16 +116,14 @@ export const generateShades = (baseHex: string, count: number): string[] => {
   const { h, s, l } = hexToHsl(baseHex);
   const shades: string[] = [];
   
-  // Target min lightness to avoid pure black (0%)
-  const targetMinL = 1;
+  // Calculate target min lightness, limiting to 80% of the range from base to 0%, and not going below 1%
+  const targetMinL = Math.max(1, l - (l * 0.8));
 
   for (let i = 0; i < count; i++) {
-    // Calculate lightness, ensuring it doesn't go below targetMinL
     const lightness = l - ((l - targetMinL) * (i / (count - 1)));
-    shades.push(hslToHex(h, s, Math.min(100, Math.max(0, lightness)))); // Ensure it stays within 0-100 range
+    shades.push(hslToHex(h, s, Math.min(100, Math.max(0, lightness))));
   }
   
-  // Filter out pure black if it somehow made it through (e.g., base color was black)
   return shades.filter(hex => hex.toLowerCase() !== '#000000');
 };
 
