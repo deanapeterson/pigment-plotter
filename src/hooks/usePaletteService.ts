@@ -4,6 +4,12 @@ import { PaletteService, ColorData } from '@/services/paletteService';
 export const usePaletteService = () => {
   const [paletteService] = useState(() => new PaletteService());
   const [colors, setColors] = useState<ColorData[]>([]);
+  const [paletteName, setPaletteNameState] = useState<string>(paletteService.getPaletteName());
+
+  // Initialize colors when the hook mounts
+  useState(() => {
+    setColors(paletteService.getColors());
+  });
 
   const addColor = useCallback((hex: string, name?: string): boolean => {
     const newColor: ColorData = {
@@ -28,6 +34,11 @@ export const usePaletteService = () => {
     setColors([...paletteService.getColors()]); // Create a new array reference
   }, [paletteService]);
 
+  const setPaletteName = useCallback((name: string) => {
+    paletteService.setPaletteName(name);
+    setPaletteNameState(name); // Update local state
+  }, [paletteService]);
+
   const exportToJson = useCallback(() => {
     return paletteService.exportToJson();
   }, [paletteService]);
@@ -50,13 +61,15 @@ export const usePaletteService = () => {
 
   return {
     colors,
+    paletteName, // Expose palette name
+    setPaletteName, // Expose setter for palette name
     addColor,
     removeColor,
     updateColor,
     exportToJson,
     downloadJson,
-    exportFlatColors, // Expose new function
-    downloadFlatColors, // Expose new function
+    exportFlatColors,
+    downloadFlatColors,
     getVariations,
   };
 };

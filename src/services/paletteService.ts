@@ -18,15 +18,25 @@ export interface ColorVariations {
 }
 
 export interface PaletteData {
+  name: string; // Added palette name
   baseColors: ColorData[];
   variations: Record<string, ColorVariations>;
 }
 
 export class PaletteService {
   private data: PaletteData = {
+    name: "My Awesome Palette", // Default name
     baseColors: [],
     variations: {}
   };
+
+  setPaletteName(name: string): void {
+    this.data.name = name;
+  }
+
+  getPaletteName(): string {
+    return this.data.name;
+  }
 
   addColor(color: ColorData): boolean {
     // Check for exact hex match first
@@ -81,7 +91,7 @@ export class PaletteService {
   exportToJson(): string {
     const exportData = {
       palette: {
-        name: `Color Palette - ${new Date().toLocaleDateString()}`,
+        name: this.data.name, // Use the palette name
         createdAt: new Date().toISOString(),
         baseColors: this.data.baseColors,
         variations: this.data.variations
@@ -96,7 +106,7 @@ export class PaletteService {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `color-palette-${Date.now()}.json`;
+    link.download = `${this.data.name.toLowerCase().replace(/\s/g, '-')}-palette-${Date.now()}.json`; // Use palette name in filename
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -126,7 +136,7 @@ export class PaletteService {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `color-palette-flat-${Date.now()}.json`;
+    link.download = `${this.data.name.toLowerCase().replace(/\s/g, '-')}-flat-colors-${Date.now()}.json`; // Use palette name in filename
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -136,8 +146,13 @@ export class PaletteService {
   importFromJson(jsonString: string): void {
     try {
       const importData = JSON.parse(jsonString);
-      if (importData.palette && importData.palette.baseColors) {
-        this.data.baseColors = importData.palette.baseColors;
+      if (importData.palette) {
+        if (importData.palette.name) {
+          this.data.name = importData.palette.name;
+        }
+        if (importData.palette.baseColors) {
+          this.data.baseColors = importData.palette.baseColors;
+        }
         this.data.variations = importData.palette.variations || {};
         
         // Regenerate variations for any missing ones

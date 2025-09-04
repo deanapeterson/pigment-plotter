@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"; // Import Input
+import { Label } from "@/components/ui/label"; // Import Label
 import { Plus, Palette, Download } from "lucide-react";
 import { ColorInput } from "./ColorInput";
 import { ColorCard } from "./ColorCard";
@@ -13,10 +15,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FlatColorListDialog } from "./FlatColorListDialog"; // Import the new dialog
+import { FlatColorListDialog } from "./FlatColorListDialog";
 
 export const ColorPaletteBuilder = () => {
-  const { colors, addColor, removeColor, updateColor, downloadJson, downloadFlatColors, exportFlatColors, getVariations } = usePaletteService();
+  const {
+    colors,
+    paletteName, // Get palette name from hook
+    setPaletteName, // Get setter for palette name from hook
+    addColor,
+    removeColor,
+    updateColor,
+    downloadJson,
+    downloadFlatColors,
+    exportFlatColors,
+    getVariations
+  } = usePaletteService();
   const [isFlatListDialogOpen, setIsFlatListDialogOpen] = useState(false);
   const [flatColorsToDisplay, setFlatColorsToDisplay] = useState<string[]>([]);
 
@@ -29,14 +42,14 @@ export const ColorPaletteBuilder = () => {
     const flatColors = exportFlatColors();
     setFlatColorsToDisplay(flatColors);
     setIsFlatListDialogOpen(true);
-    // The actual download will happen if the user clicks "Download JSON" inside the dialog,
-    // or they can copy the list.
   };
 
+  // This function is not directly used here anymore as the dialog doesn't have a download button
+  // but it's kept for consistency if future changes reintroduce it.
   const handleDownloadFlatListFromDialog = () => {
     downloadFlatColors();
     toast("Flat list of colors downloaded successfully!");
-    setIsFlatListDialogOpen(false); // Close dialog after download
+    setIsFlatListDialogOpen(false);
   };
 
   return (
@@ -66,7 +79,7 @@ export const ColorPaletteBuilder = () => {
 
       {/* Header */}
       <div className="container mx-auto px-6 py-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8"> {/* Reduced bottom margin */}
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="p-3 bg-gradient-primary rounded-2xl shadow-glow">
               <Palette className="w-8 h-8 text-primary-foreground" />
@@ -75,10 +88,22 @@ export const ColorPaletteBuilder = () => {
               Color Palette Builder
             </h1>
           </div>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Create beautiful color palettes with automatic tints, shades, and variations. 
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-6"> {/* Added bottom margin */}
+            Create beautiful color palettes with automatic tints, shades, and variations.
             Perfect for designers and developers.
           </p>
+
+          {/* Palette Name Input */}
+          <div className="max-w-md mx-auto text-left mb-12"> {/* Added max-w and mx-auto for centering */}
+            <Label htmlFor="palette-name" className="sr-only">Palette Name</Label>
+            <Input
+              id="palette-name"
+              placeholder="Enter palette name (e.g., My Brand Colors)"
+              value={paletteName}
+              onChange={(e) => setPaletteName(e.target.value)}
+              className="text-center text-lg py-6 bg-card/60 border-0 shadow-soft focus:shadow-elegant transition-all duration-300"
+            />
+          </div>
         </div>
 
         {/* Add New Color */}
