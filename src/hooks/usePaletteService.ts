@@ -2,14 +2,12 @@ import { useState, useCallback } from 'react';
 import { PaletteService, ColorData } from '@/services/paletteService';
 
 export const usePaletteService = () => {
+  // Initialize PaletteService once. Its constructor will handle loading from localStorage.
   const [paletteService] = useState(() => new PaletteService());
-  const [colors, setColors] = useState<ColorData[]>([]);
+  
+  // Initialize state variables from the paletteService instance
+  const [colors, setColors] = useState<ColorData[]>(paletteService.getColors());
   const [paletteName, setPaletteNameState] = useState<string>(paletteService.getPaletteName());
-
-  // Initialize colors when the hook mounts
-  useState(() => {
-    setColors(paletteService.getColors());
-  });
 
   const addColor = useCallback((hex: string, name?: string): boolean => {
     const newColor: ColorData = {
@@ -19,24 +17,24 @@ export const usePaletteService = () => {
     };
     const success = paletteService.addColor(newColor);
     if (success) {
-      setColors([...paletteService.getColors()]); // Create a new array reference
+      setColors([...paletteService.getColors()]); // Create a new array reference to trigger re-render
     }
     return success;
   }, [paletteService]);
 
   const removeColor = useCallback((id: string) => {
     paletteService.removeColor(id);
-    setColors([...paletteService.getColors()]); // Create a new array reference
+    setColors([...paletteService.getColors()]); // Create a new array reference to trigger re-render
   }, [paletteService]);
 
   const updateColor = useCallback((id: string, hex: string, name?: string) => {
     paletteService.updateColor(id, hex, name);
-    setColors([...paletteService.getColors()]); // Create a new array reference
+    setColors([...paletteService.getColors()]); // Create a new array reference to trigger re-render
   }, [paletteService]);
 
   const setPaletteName = useCallback((name: string) => {
     paletteService.setPaletteName(name);
-    setPaletteNameState(name); // Update local state
+    setPaletteNameState(name); // Update local state to trigger re-render
   }, [paletteService]);
 
   const exportToJson = useCallback(() => {
@@ -61,8 +59,8 @@ export const usePaletteService = () => {
 
   return {
     colors,
-    paletteName, // Expose palette name
-    setPaletteName, // Expose setter for palette name
+    paletteName,
+    setPaletteName,
     addColor,
     removeColor,
     updateColor,

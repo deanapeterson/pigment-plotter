@@ -23,6 +23,8 @@ export interface PaletteData {
   variations: Record<string, ColorVariations>;
 }
 
+const LOCAL_STORAGE_KEY = "color-palette-builder-data";
+
 export class PaletteService {
   private data: PaletteData = {
     name: "My Awesome Palette", // Default name
@@ -30,8 +32,44 @@ export class PaletteService {
     variations: {}
   };
 
+  constructor() {
+    this.loadPalette();
+  }
+
+  private savePalette(): void {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.data));
+    } catch (error) {
+      console.error("Failed to save palette to local storage:", error);
+    }
+  }
+
+  private loadPalette(): void {
+    try {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedData) {
+        const parsedData: PaletteData = JSON.parse(savedData);
+        // Basic validation to ensure loaded data has expected structure
+        if (parsedData.name && Array.isArray(parsedData.baseColors) && typeof parsedData.variations === 'object') {
+          this.data = parsedData;
+          // Regenerate variations for any missing ones (e.g., if new harmony types are added)
+          this.data.baseColors.forEach(color => {
+            if (!this.data.variations[color.id]) {
+              this.generateVariations(color);
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load palette from local storage:", error);
+      // Optionally clear corrupted data
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    }
+  }
+
   setPaletteName(name: string): void {
     this.data.name = name;
+    this.savePalette();
   }
 
   getPaletteName(): string {
@@ -51,12 +89,14 @@ export class PaletteService {
 
     this.data.baseColors.push(color);
     this.generateVariations(color);
+    this.savePalette();
     return true; // Color added successfully
   }
 
   removeColor(id: string): void {
     this.data.baseColors = this.data.baseColors.filter(color => color.id !== id);
     delete this.data.variations[id];
+    this.savePalette();
   }
 
   updateColor(id: string, hex: string, name?: string): void {
@@ -64,6 +104,7 @@ export class PaletteService {
     if (colorIndex !== -1) {
       this.data.baseColors[colorIndex] = { id, hex, name };
       this.generateVariations({ id, hex, name });
+      this.savePalette();
     }
   }
 
@@ -161,6 +202,7 @@ export class PaletteService {
             this.generateVariations(color);
           }
         });
+        this.savePalette(); // Save after successful import
       }
     } catch (error) {
       console.error('Error importing palette:', error);
