@@ -1,13 +1,29 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { PaletteService, ColorData } from '@/services/paletteService';
 
 export const usePaletteService = () => {
-  // Initialize PaletteService once. Its constructor will handle loading from localStorage.
   const [paletteService] = useState(() => new PaletteService());
   
-  // Initialize state variables from the paletteService instance
-  const [colors, setColors] = useState<ColorData[]>(paletteService.getColors());
-  const [paletteName, setPaletteNameState] = useState<string>(paletteService.getPaletteName());
+  // State for the currently active palette's data
+  const [colors, setColors] = useState<ColorData[]>([]);
+  const [paletteName, setPaletteNameState] = useState<string>("");
+  
+  // State for managing the list of all palettes
+  const [allPaletteNames, setAllPaletteNames] = useState<string[]>([]);
+  const [activePaletteName, setActivePaletteNameState] = useState<string | null>(null);
+
+  // Function to update all relevant states from the service
+  const updateAllStates = useCallback(() => {
+    setColors(paletteService.getColors());
+    setPaletteNameState(paletteService.getPaletteNameForActive());
+    setAllPaletteNames(paletteService.getAllPaletteNames());
+    setActivePaletteNameState(paletteService.getActivePaletteName());
+  }, [paletteService]);
+
+  // Initialize states on mount
+  useEffect(() => {
+    updateAllStates();
+  }, [updateAllStates]);
 
   const addColor = useCallback((hex: string, name?: string): boolean => {
     const newColor: ColorData = {
@@ -17,25 +33,52 @@ export const usePaletteService = () => {
     };
     const success = paletteService.addColor(newColor);
     if (success) {
-      setColors([...paletteService.getColors()]); // Create a new array reference to trigger re-render
+      updateAllStates();
     }
     return success;
-  }, [paletteService]);
+  }, [paletteService, updateAllStates]);
 
   const removeColor = useCallback((id: string) => {
     paletteService.removeColor(id);
-    setColors([...paletteService.getColors()]); // Create a new array reference to trigger re-render
-  }, [paletteService]);
+    updateAllStates();
+  }, [paletteService, updateAllStates]);
 
   const updateColor = useCallback((id: string, hex: string, name?: string) => {
     paletteService.updateColor(id, hex, name);
-    setColors([...paletteService.getColors()]); // Create a new array reference to trigger re-render
-  }, [paletteService]);
+    updateAllStates();
+  }, [paletteService, updateAllStates]);
 
   const setPaletteName = useCallback((name: string) => {
-    paletteService.setPaletteName(name);
-    setPaletteNameState(name); // Update local state to trigger re-render
-  }, [paletteService]);
+    paletteService.setPaletteNameForActive(name);
+    updateAllStates();
+  }, [paletteService, updateAllStates]);
+
+  const createNewPalette = useCallback((name: string): boolean => {
+    const success = paletteService.createPalette(name);
+    if (success) {
+      updateAllStates();
+    }
+    return success;
+  }, [paletteService, updateAllStates]);
+
+  const switchPalette = useCallback((name: string): boolean => {
+    const success = paletteService.loadPalette(name);
+    if (success) {
+      updateAllStates();
+    }
+    return success;
+  }, [paletteService, updateAllStates]);
+
+  const deleteActivePalette = useCallback((): boolean => {
+    if (activePaletteName) {
+      const success = paletteService.deletePalette(activePaletteName);
+      if (success) {
+        updateAllStates();
+      }
+      return success;
+    }
+    return false;
+  }, [paletteService, activePaletteName, updateAllStates]);
 
   const exportToJson = useCallback(() => {
     return paletteService.exportToJson();
@@ -57,10 +100,20 @@ export const usePaletteService = () => {
     return paletteService.getVariations(colorId);
   }, [paletteService]);
 
+  const importPaletteFromJson = useCallback((jsonString: string) => {
+    paletteService.importFromJson(jsonString);
+    updateAllStates();
+  }, [paletteService, updateAllStates]);
+
   return {
     colors,
     paletteName,
     setPaletteName,
+    allPaletteNames,
+    activePaletteName,
+    createNewPalette,
+    switchPalette,
+    deleteActivePalette,
     addColor,
     removeColor,
     updateColor,
@@ -69,5 +122,6 @@ export const usePaletteService = () => {
     exportFlatColors,
     downloadFlatColors,
     getVariations,
+    importPaletteFromJson,
   };
 };
