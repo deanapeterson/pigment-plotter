@@ -27,7 +27,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
     return [...colors].sort((a, b) => {
       const hslA = hexToHsl(a);
       const hslB = hexToHsl(b);
-      return hslA.h - hslB.h;
+      return hslA.l - hslB.l; // Sort by lightness
     });
   }, [colors]);
 
@@ -61,7 +61,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
         <DialogHeader>
           <DialogTitle>Exported Flat Color List</DialogTitle>
           <DialogDescription>
-            Here is a flat list of all unique colors in your palette, sorted by hue.
+            Here is a flat list of all unique colors in your palette, sorted by lightness.
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center justify-end gap-2 mb-4">

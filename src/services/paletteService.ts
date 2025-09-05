@@ -260,11 +260,11 @@ export class PaletteService {
     const filteredColors: string[] = [];
     const potentialColorsArray = Array.from(allPotentialColors);
 
-    // Sort potential colors by hue first to make the filtering more consistent
+    // Sort potential colors by lightness
     potentialColorsArray.sort((a, b) => {
       const hslA = hexToHsl(a);
       const hslB = hexToHsl(b);
-      return hslA.h - hslB.h;
+      return hslA.l - hslB.l; // Sort by lightness
     });
 
     potentialColorsArray.forEach(newColorHex => {
