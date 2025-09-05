@@ -247,22 +247,38 @@ export class PaletteService {
 
   // New private method to update the flatColors array
   private _updateFlatColors(palette: PaletteData): void {
-    const uniqueColors = new Set<string>();
+    const allPotentialColors = new Set<string>();
 
-    palette.baseColors.forEach(color => uniqueColors.add(color.hex.toUpperCase()));
+    palette.baseColors.forEach(color => allPotentialColors.add(color.hex.toUpperCase()));
 
     Object.values(palette.variations).forEach(variationSet => {
       Object.values(variationSet).forEach(colorsArray => {
-        colorsArray.forEach(colorHex => uniqueColors.add(colorHex.toUpperCase()));
+        colorsArray.forEach(colorHex => allPotentialColors.add(colorHex.toUpperCase()));
       });
     });
 
-    // Sort colors by hue for consistent display
-    palette.flatColors = Array.from(uniqueColors).sort((a, b) => {
+    const filteredColors: string[] = [];
+    const potentialColorsArray = Array.from(allPotentialColors);
+
+    // Sort potential colors by hue first to make the filtering more consistent
+    potentialColorsArray.sort((a, b) => {
       const hslA = hexToHsl(a);
       const hslB = hexToHsl(b);
       return hslA.h - hslB.h;
     });
+
+    potentialColorsArray.forEach(newColorHex => {
+      // Check if this newColorHex is similar to any color already in filteredColors
+      const isSimilarToExisting = filteredColors.some(existingColorHex =>
+        areColorsSimilar(existingColorHex, newColorHex)
+      );
+
+      if (!isSimilarToExisting) {
+        filteredColors.push(newColorHex);
+      }
+    });
+
+    palette.flatColors = filteredColors;
   }
 
   getColors(): ColorData[] {
