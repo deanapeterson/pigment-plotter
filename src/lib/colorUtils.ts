@@ -205,7 +205,7 @@ export const generateSplitComplementary = (baseHex: string): string[] => {
 // Threshold for HSL similarity. This value might need adjustment based on visual perception.
 // A smaller value means colors must be very close to be considered similar.
 // This is a rough heuristic; a more accurate perceptual difference would use CIEDE2000 in Lab space.
-const HSL_SIMILARITY_THRESHOLD = 15; // Example value, can be tuned
+const HSL_SIMILARITY_THRESHOLD = 100; // Example value, can be tuned
 
 export const hslDistance = (hsl1: { h: number; s: number; l: number }, hsl2: { h: number; s: number; l: number }): number => {
   const hueDiff = Math.abs(hsl1.h - hsl2.h);
