@@ -1,12 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary } from "@/lib/colorUtils";
-import { ColorVariations as ColorVariationsType } from "@/types/color"; // Updated import
+import { ColorVariations as ColorVariationsType, ColorVariationsProps } from "@/types/color"; // Updated import
 import { toast } from "sonner"; // Import toast for notifications
 
-interface ColorVariationsProps {
-  baseColor: string;
-  variations?: ColorVariationsType;
-}
 
 export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps) => {
   // Use provided variations or generate them with a count of 5

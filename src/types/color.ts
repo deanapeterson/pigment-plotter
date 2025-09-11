@@ -25,3 +25,8 @@ export interface ColorCardProps {
 export interface ColorInputProps {
   onAddColor: (hex: string, name?: string) => boolean;
 }
+
+export interface ColorVariationsProps {
+  baseColor: string;
+  variations?: ColorVariations;
+}
