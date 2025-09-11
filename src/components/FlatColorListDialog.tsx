@@ -13,12 +13,7 @@ import { toast } from "sonner";
 import { getContrastColor, hexToHsl } from "@/lib/colorUtils";
 import { Toggle } from "@/components/ui/toggle";
 import { Label } from "@/components/ui/label";
-
-interface FlatColorListDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  colors: string[];
-}
+import { FlatColorListDialogProps } from "@/types/color"; // Updated import
 
 export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorListDialogProps) => {
   const [viewAsJson, setViewAsJson] = useState(false);

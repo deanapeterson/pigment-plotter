@@ -30,3 +30,9 @@ export interface ColorVariationsProps {
   baseColor: string;
   variations?: ColorVariations;
 }
+
+export interface FlatColorListDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  colors: string[];
+}
