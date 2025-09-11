@@ -36,3 +36,33 @@ export interface FlatColorListDialogProps {
   onOpenChange: (open: boolean) => void;
   colors: string[];
 }
+
+// New interfaces for refactored components
+export interface PaletteManagementActionsProps {
+  allPaletteNames: string[];
+  activePaletteName: string | null;
+  switchPalette: (name: string) => boolean;
+  createNewPalette: () => void;
+  setIsImportPaletteDialogOpen: (isOpen: boolean) => void;
+  deleteActivePalette: () => void;
+  hasColors: boolean; // To determine if delete option should be available
+}
+
+export interface ExportPaletteActionsProps {
+  hasColors: boolean;
+  onExportFullPalette: () => void;
+  onExportFlatList: () => void;
+}
+
+export interface PaletteHeaderSectionProps {
+  paletteName: string;
+  setPaletteName: (name: string) => void;
+}
+
+export interface ImportPaletteDialogProps {
+  open: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  importJsonInput: string;
+  setImportJsonInput: (json: string) => void;
+  onImportPalette: () => void;
+}
