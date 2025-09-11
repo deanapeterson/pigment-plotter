@@ -31,7 +31,7 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
         {colors.map((color, index) => (
           <div
             key={index}
-            className="aspect-2/1 relative group cursor-pointer transition-all duration-100 hover:drop-shadow-lg" // Applied hover:drop-shadow-lg here
+            className="aspect-2/1 relative group cursor-pointer transition-all duration-100"
             style={{ backgroundColor: color }}
             title={color}
             onClick={() => handleCopy(color, "HEX")}
