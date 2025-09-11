@@ -91,7 +91,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, colors }: FlatColorLis
                   return (
                     <div
                       key={index}
-                      className="aspect-square flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-all duration-100 hover:drop-shadow-lg" // Changed to hover:drop-shadow-lg
+                      className="aspect-square flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-all duration-100 hover:shadow-lg" // Reverted to hover:shadow-lg
                       style={{ backgroundColor: color, color: contrastColor }}
                       title={`Click to copy ${color.toUpperCase()}`}
                       onClick={() => {
