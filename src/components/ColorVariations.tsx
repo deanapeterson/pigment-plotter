@@ -31,7 +31,7 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
         {colors.map((color, index) => (
           <div
             key={index}
-            className="aspect-2/1 relative group cursor-pointer transition-all duration-100 hover:shadow-md" // Changed hover:scale-105 to hover:shadow-md
+            className="aspect-2/1 relative group cursor-pointer transition-all duration-100 hover:drop-shadow-lg" // Changed to hover:drop-shadow-lg
             style={{ backgroundColor: color }}
             title={color}
             onClick={() => handleCopy(color, "HEX")}
@@ -57,7 +57,7 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
             <div
               key={index}
               className={`aspect-2/1 relative group ${
-                color === 'transparent' ? 'cursor-default' : 'cursor-pointer transition-all duration-100 hover:shadow-md' // Changed hover:scale-105 to hover:shadow-md
+                color === 'transparent' ? 'cursor-default' : 'cursor-pointer transition-all duration-100 hover:drop-shadow-lg' // Changed to hover:drop-shadow-lg
               }`}
               style={{ backgroundColor: color === 'transparent' ? 'transparent' : color }}
               title={color === 'transparent' ? '' : color}
