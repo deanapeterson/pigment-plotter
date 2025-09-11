@@ -7,15 +7,8 @@ import { Trash2, Edit2, Copy, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { ColorVariations } from "./ColorVariations";
 import { hexToRgb, hexToHsl, getContrastColor } from "@/lib/colorUtils";
-import { ColorVariations as ColorVariationsType, ColorData } from "@/services/paletteService";
+import { ColorVariations as ColorVariationsType, ColorData, ColorCardProps } from "@/types/color"; // Updated import
 import { HexColorPicker } from "react-colorful"; // Import HexColorPicker
-
-interface ColorCardProps {
-  color: ColorData;
-  onRemove: () => void;
-  onUpdate: (hex: string, name?: string) => void;
-  variations?: ColorVariationsType;
-}
 
 export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardProps) => {
   const [isEditing, setIsEditing] = useState(false);

@@ -1,21 +1,5 @@
 import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary, areColorsSimilar, hexToHsl } from "@/lib/colorUtils";
-
-export interface ColorData {
-  id: string;
-  hex: string;
-  name?: string;
-}
-
-export interface ColorVariations {
-  tints: string[];
-  shades: string[];
-  analogous: string[];
-  complementary: string[];
-  triadic: string[];
-  square: string[];
-  tetradic: string[];
-  splitComplementary: string[];
-}
+import { ColorData, ColorVariations } from "@/types/color"; // Updated import
 
 export interface PaletteData {
   name: string;

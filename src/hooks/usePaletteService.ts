@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { PaletteService, ColorData } from '@/services/paletteService';
+import { PaletteService } from '@/services/paletteService';
+import { ColorData } from '@/types/color'; // Updated import
 
 export const usePaletteService = () => {
   const [paletteService] = useState(() => new PaletteService());

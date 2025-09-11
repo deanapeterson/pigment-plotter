@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary } from "@/lib/colorUtils";
-import { ColorVariations as ColorVariationsType } from "@/services/paletteService";
+import { ColorVariations as ColorVariationsType } from "@/types/color"; // Updated import
 import { toast } from "sonner"; // Import toast for notifications
 
 interface ColorVariationsProps {
