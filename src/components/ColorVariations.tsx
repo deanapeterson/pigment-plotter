@@ -57,7 +57,7 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
             <div
               key={index}
               className={`aspect-2/1 relative group ${
-                color === 'transparent' ? 'cursor-default' : 'cursor-pointer transition-all duration-100 hover:drop-shadow-lg' // Applied hover:drop-shadow-lg here
+                color === 'transparent' ? 'cursor-default' : 'cursor-pointer transition-all duration-100'
               }`}
               style={{ backgroundColor: color === 'transparent' ? 'transparent' : color }}
               title={color === 'transparent' ? '' : color}
