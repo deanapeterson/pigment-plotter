@@ -43,7 +43,7 @@ export const ColorCard = ({ color, onRemove, onUpdate, variations }: ColorCardPr
   const rgb = hexToRgb(color.hex);
 
   return (
-    <Card className="overflow-hidden shadow-soft border-0 bg-card/60 backdrop-blur-sm hover:shadow-elegant transition-all duration-300">
+    <Card className="overflow-hidden shadow-soft border-0 bg-card/60 backdrop-blur-sm transition-all duration-300">
       <div className="flex flex-col md:flex-row"> {/* Added flex-col and md:flex-row for responsiveness */}
         {/* Primary Color Section - Left Side */}
         <div 
