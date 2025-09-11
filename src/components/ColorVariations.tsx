@@ -31,7 +31,7 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
         {colors.map((color, index) => (
           <div
             key={index}
-            className="aspect-2/1 relative group cursor-pointer transition-all duration-100 hover:shadow-lg" // Reverted to hover:shadow-lg
+            className="aspect-2/1 relative group cursor-pointer transition-all duration-100 hover:drop-shadow-lg" // Applied hover:drop-shadow-lg here
             style={{ backgroundColor: color }}
             title={color}
             onClick={() => handleCopy(color, "HEX")}
@@ -52,12 +52,12 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
     return (
       <div className="flex items-center gap-2">
         <Badge variant="secondary" className="text-xs w-[120px] text-center text-wrap">{title}</Badge>
-        <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-hidden shadow-sm">
+        <div className="flex-1 grid grid-cols-5 gap-1 rounded-lg overflow-sm">
           {paddedColors.map((color, index) => (
             <div
               key={index}
               className={`aspect-2/1 relative group ${
-                color === 'transparent' ? 'cursor-default' : 'cursor-pointer transition-all duration-100 hover:shadow-lg' // Reverted to hover:shadow-lg
+                color === 'transparent' ? 'cursor-default' : 'cursor-pointer transition-all duration-100 hover:drop-shadow-lg' // Applied hover:drop-shadow-lg here
               }`}
               style={{ backgroundColor: color === 'transparent' ? 'transparent' : color }}
               title={color === 'transparent' ? '' : color}
