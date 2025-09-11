@@ -7,10 +7,7 @@ import { toast } from "sonner";
 import { isValidHex } from "@/lib/colorUtils";
 import { HexColorPicker } from "react-colorful";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-interface ColorInputProps {
-  onAddColor: (hex: string, name?: string) => boolean;
-}
+import { ColorInputProps } from "@/types/color"; // Updated import
 
 export const ColorInput = ({ onAddColor }: ColorInputProps) => {
   const [hexValue, setHexValue] = useState("");

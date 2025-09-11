@@ -21,3 +21,7 @@ export interface ColorCardProps {
   onUpdate: (hex: string, name?: string) => void;
   variations?: ColorVariations;
 }
+
+export interface ColorInputProps {
+  onAddColor: (hex: string, name?: string) => boolean;
+}
