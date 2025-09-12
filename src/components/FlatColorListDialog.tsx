@@ -68,7 +68,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, allUniqueColorsUnfilte
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col">
+      <DialogContent className="w-full max-w-[66vw] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Exported Flat Color List</DialogTitle>
           <DialogDescription>
