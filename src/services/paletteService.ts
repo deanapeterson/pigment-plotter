@@ -284,6 +284,22 @@ export class PaletteService {
     return this.getActivePalette().variations[colorId];
   }
 
+  // New method to get all unique colors without similarity filtering
+  getAllUniqueColorsUnfiltered(): string[] {
+    const allPotentialColors = new Set<string>();
+    const activePalette = this.getActivePalette();
+
+    activePalette.baseColors.forEach(color => allPotentialColors.add(color.hex.toUpperCase()));
+
+    Object.values(activePalette.variations).forEach(variationSet => {
+      Object.values(variationSet).forEach(colorsArray => {
+        colorsArray.forEach(colorHex => allPotentialColors.add(colorHex.toUpperCase()));
+      });
+    });
+
+    return Array.from(allPotentialColors);
+  }
+
   exportToJson(): string {
     const activePalette = this.getActivePalette();
     const exportData = {

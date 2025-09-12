@@ -11,7 +11,7 @@ import { PaletteManagementActions } from "./PaletteManagementActions";
 import { ExportPaletteActions } from "./ExportPaletteActions";
 import { PaletteHeaderSection } from "./PaletteHeaderSection";
 import { ImportPaletteDialog } from "./ImportPaletteDialog";
-import { SettingsPanel } from "./SettingsPanel"; // Import the new component
+// Removed: import { SettingsPanel } from "./SettingsPanel"; 
 
 export const ColorPaletteBuilder = () => {
   const [similarityThreshold, setSimilarityThreshold] = useState(20); // Initial threshold
@@ -29,13 +29,14 @@ export const ColorPaletteBuilder = () => {
     removeColor,
     updateColor,
     downloadJson,
-    exportFlatColors,
+    exportFlatColors, // This now returns the *filtered* flat colors from service
+    getAllUniqueColorsUnfiltered, // New function to get all unique colors without filtering
     getVariations,
     importPaletteFromJson,
   } = usePaletteService(similarityThreshold); // Pass threshold to the hook
 
   const [isFlatListDialogOpen, setIsFlatListDialogOpen] = useState(false);
-  const [flatColorsToDisplay, setFlatColorsToDisplay] = useState<string[]>([]);
+  const [allUniqueColorsForDialog, setAllUniqueColorsForDialog] = useState<string[]>([]); // State for unfiltered colors
   const [isImportPaletteDialogOpen, setIsImportPaletteDialogOpen] = useState(false);
   const [importJsonInput, setImportJsonInput] = useState("");
 
@@ -45,8 +46,8 @@ export const ColorPaletteBuilder = () => {
   };
 
   const handleExportFlatList = () => {
-    const flatColors = exportFlatColors();
-    setFlatColorsToDisplay(flatColors);
+    const unfilteredColors = getAllUniqueColorsUnfiltered(); // Get all unique colors without filtering
+    setAllUniqueColorsForDialog(unfilteredColors);
     setIsFlatListDialogOpen(true);
   };
 
@@ -92,10 +93,7 @@ export const ColorPaletteBuilder = () => {
     <div className="min-h-screen bg-gradient-subtle">
       {/* Top Right Actions */}
       <div className="fixed top-4 right-4 z-50 flex gap-2">
-        <SettingsPanel
-          similarityThreshold={similarityThreshold}
-          setSimilarityThreshold={setSimilarityThreshold}
-        />
+        {/* Removed: SettingsPanel */}
         <PaletteManagementActions
           allPaletteNames={allPaletteNames}
           activePaletteName={activePaletteName}
@@ -156,7 +154,9 @@ export const ColorPaletteBuilder = () => {
       <FlatColorListDialog
         open={isFlatListDialogOpen}
         onOpenChange={setIsFlatListDialogOpen}
-        colors={flatColorsToDisplay}
+        allUniqueColorsUnfiltered={allUniqueColorsForDialog} // Pass the unfiltered list
+        similarityThreshold={similarityThreshold}
+        setSimilarityThreshold={setSimilarityThreshold}
       />
 
       {/* Import Palette Dialog */}

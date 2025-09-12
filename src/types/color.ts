@@ -34,7 +34,9 @@ export interface ColorVariationsProps {
 export interface FlatColorListDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  colors: string[];
+  allUniqueColorsUnfiltered: string[]; // Now receives the unfiltered list
+  similarityThreshold: number;
+  setSimilarityThreshold: (threshold: number) => void;
 }
 
 // New interfaces for refactored components
@@ -65,9 +67,4 @@ export interface ImportPaletteDialogProps {
   importJsonInput: string;
   setImportJsonInput: (json: string) => void;
   onImportPalette: () => void;
-}
-
-export interface SettingsPanelProps {
-  similarityThreshold: number;
-  setSimilarityThreshold: (threshold: number) => void;
 }

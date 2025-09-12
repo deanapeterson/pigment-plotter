@@ -107,6 +107,10 @@ export const usePaletteService = (initialSimilarityThreshold: number) => {
     return paletteService.getVariations(colorId);
   }, [paletteService]);
 
+  const getAllUniqueColorsUnfiltered = useCallback(() => {
+    return paletteService.getAllUniqueColorsUnfiltered();
+  }, [paletteService]);
+
   const importPaletteFromJson = useCallback((jsonString: string) => {
     paletteService.importFromJson(jsonString);
     updateAllStates();
@@ -129,6 +133,7 @@ export const usePaletteService = (initialSimilarityThreshold: number) => {
     exportFlatColors,
     downloadFlatColors,
     getVariations,
+    getAllUniqueColorsUnfiltered, // Expose the new function
     importPaletteFromJson,
   };
 };
