@@ -102,7 +102,7 @@ export const generateSplitComplementary = (baseHex: string): string[] => {
 // CIEDE2000 threshold for "just noticeable difference" (JND)
 // chroma.js deltaE is based on CIE76, which is less perceptually uniform than CIEDE2000.
 // A common CIEDE2000 JND is around 2.3. For CIE76, a slightly higher threshold is often used for "similar enough".
-const CIE76_SIMILARITY_THRESHOLD = 5; 
+const CIE76_SIMILARITY_THRESHOLD = 2.3; 
 
 export const areColorsSimilarCiede2000 = (hex1: string, hex2: string, threshold: number = CIE76_SIMILARITY_THRESHOLD): boolean => {
   if (!isValidHex(hex1) || !isValidHex(hex2)) {
