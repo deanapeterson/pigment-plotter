@@ -1,4 +1,9 @@
 // Color utility functions for the palette builder
+import { colord, extend } from "colord";
+import ciede2000Plugin from "colord/plugins/ciede2000";
+
+// Extend colord with the ciede2000 plugin
+extend([ciede2000Plugin]);
 
 export const isValidHex = (hex: string): boolean => {
   return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
@@ -202,32 +207,15 @@ export const generateSplitComplementary = (baseHex: string): string[] => {
   return splitComplementary;
 };
 
-// Threshold for HSL similarity. This value might need adjustment based on visual perception.
-// A smaller value means colors must be very close to be considered similar.
-// This is a rough heuristic; a more accurate perceptual difference would use CIEDE2000 in Lab space.
-const HSL_SIMILARITY_THRESHOLD = 15; // Example value, can be tuned
+// CIEDE2000 threshold for "just noticeable difference" (JND)
+// A common value for JND is around 2.3.
+const CIEDE2000_SIMILARITY_THRESHOLD = 2.3; 
 
-export const hslDistance = (hsl1: { h: number; s: number; l: number }, hsl2: { h: number; s: number; l: number }): number => {
-  const hueDiff = Math.abs(hsl1.h - hsl2.h);
-  const minHueDiff = Math.min(hueDiff, 360 - hueDiff); // Account for circular nature of hue
-
-  const satDiff = Math.abs(hsl1.s - hsl2.s);
-  const lightDiff = Math.abs(hsl1.l - hsl2.l);
-
-  // A simple weighted sum of differences. Hue is often more perceptually significant.
-  // Weights can be adjusted.
-  return Math.sqrt(
-    (minHueDiff * minHueDiff * 0.5) + // Hue weighted
-    (satDiff * satDiff * 0.25) +     // Saturation weighted
-    (lightDiff * lightDiff * 0.25)   // Lightness weighted
-  );
-};
-
-export const areColorsSimilar = (hex1: string, hex2: string, threshold: number = HSL_SIMILARITY_THRESHOLD): boolean => {
+export const areColorsSimilarCiede2000 = (hex1: string, hex2: string, threshold: number = CIEDE2000_SIMILARITY_THRESHOLD): boolean => {
   if (!isValidHex(hex1) || !isValidHex(hex2)) {
     return false; // Cannot compare invalid hex codes
   }
-  const hsl1 = hexToHsl(hex1);
-  const hsl2 = hexToHsl(hex2);
-  return hslDistance(hsl1, hsl2) < threshold;
+  // Calculate CIEDE2000 difference
+  const diff = colord(hex1).ciede2000(hex2);
+  return diff < threshold;
 };

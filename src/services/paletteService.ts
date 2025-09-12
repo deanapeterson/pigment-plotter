@@ -1,4 +1,4 @@
-import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary, areColorsSimilar, hexToHsl } from "@/lib/colorUtils";
+import { generateTints, generateShades, generateAnalogous, generateComplementary, generateTriadic, generateSquare, generateTetradic, generateSplitComplementary, areColorsSimilarCiede2000, hexToHsl } from "@/lib/colorUtils";
 import { ColorData, ColorVariations } from "@/types/color"; // Updated import
 
 export interface PaletteData {
@@ -186,7 +186,8 @@ export class PaletteService {
     if (activePalette.baseColors.some(c => c.hex.toLowerCase() === color.hex.toLowerCase())) {
       return false;
     }
-    if (activePalette.baseColors.some(c => areColorsSimilar(c.hex, color.hex))) {
+    // Use the new CIEDE2000 similarity check
+    if (activePalette.baseColors.some(c => areColorsSimilarCiede2000(c.hex, color.hex))) {
       return false;
     }
 
@@ -254,7 +255,7 @@ export class PaletteService {
     potentialColorsArray.forEach(newColorHex => {
       // Check if this newColorHex is similar to any color already in filteredColors
       const isSimilarToExisting = filteredColors.some(existingColorHex =>
-        areColorsSimilar(existingColorHex, newColorHex)
+        areColorsSimilarCiede2000(existingColorHex, newColorHex) // Use CIEDE2000 here too
       );
 
       if (!isSimilarToExisting) {
