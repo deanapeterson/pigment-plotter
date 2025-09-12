@@ -232,10 +232,10 @@ export class PaletteService {
       tints: generateTints(color.hex, 5),
       shades: generateShades(color.hex, 5),
       analogous: generateAnalogous(color.hex),
-      complementary: generateComplementary(color.hex),
+      // complementary: generateComplementary(color.hex),
       triadic: generateTriadic(color.hex),
       square: generateSquare(color.hex),
-      tetradic: generateTetradic(color.hex),
+      // tetradic: generateTetradic(color.hex),
       splitComplementary: generateSplitComplementary(color.hex)
     };
   }

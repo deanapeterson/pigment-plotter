@@ -8,10 +8,10 @@ export interface ColorVariations {
   tints: string[];
   shades: string[];
   analogous: string[];
-  complementary: string[];
+  // complementary: string[];
   triadic: string[];
   square: string[];
-  tetradic: string[];
+  // tetradic: string[];
   splitComplementary: string[];
 }
 

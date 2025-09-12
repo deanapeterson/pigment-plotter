@@ -9,10 +9,10 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
   const tints = variations?.tints || generateTints(baseColor, 5);
   const shades = variations?.shades || generateShades(baseColor, 5);
   const analogous = variations?.analogous || generateAnalogous(baseColor);
-  const complementary = variations?.complementary || generateComplementary(baseColor);
+  // const complementary = variations?.complementary || generateComplementary(baseColor);
   const triadic = variations?.triadic || generateTriadic(baseColor);
   const square = variations?.square || generateSquare(baseColor);
-  const tetradic = variations?.tetradic || generateTetradic(baseColor);
+  // const tetradic = variations?.tetradic || generateTetradic(baseColor);
   const splitComplementary = variations?.splitComplementary || generateSplitComplementary(baseColor);
 
   const handleCopy = (value: string, format: string) => {
@@ -80,10 +80,10 @@ export const ColorVariations = ({ baseColor, variations }: ColorVariationsProps)
         <h4 className="font-semibold mb-2 text-foreground">Color Harmonies</h4>
         <div className="space-y-2">
           <ColorHarmonyStrip colors={analogous} title="Analogous Colors" />
-          <ColorHarmonyStrip colors={complementary} title="Complementary Colors" />
+          {/* <ColorHarmonyStrip colors={complementary} title="Complementary Colors" /> */}
           <ColorHarmonyStrip colors={triadic} title="Triadic Colors" />
           <ColorHarmonyStrip colors={square} title="Square Colors" />
-          <ColorHarmonyStrip colors={tetradic} title="Tetradic Colors" />
+          {/* <ColorHarmonyStrip colors={tetradic} title="Tetradic Colors" /> */}
           <ColorHarmonyStrip colors={splitComplementary} title="Split Complementary" />
         </div>
       </div>
