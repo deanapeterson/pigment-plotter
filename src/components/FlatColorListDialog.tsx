@@ -24,11 +24,11 @@ export const FlatColorListDialog = ({ open, onOpenChange, allUniqueColorsUnfilte
     const filteredColors: string[] = [];
     const potentialColorsArray = [...allUniqueColorsUnfiltered];
 
-    // Sort potential colors by lightness first
+    // Sort potential colors by hue
     potentialColorsArray.sort((a, b) => {
       const hslA = hexToHsl(a);
       const hslB = hexToHsl(b);
-      return hslA.l - hslB.l;
+      return hslA.h - hslB.h;
     });
 
     potentialColorsArray.forEach(newColorHex => {
@@ -74,7 +74,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, allUniqueColorsUnfilte
         <DialogHeader>
           <DialogTitle>Exported Flat Color List</DialogTitle>
           <DialogDescription>
-            Here is a flat list of all unique colors in your palette, filtered and sorted by lightness.
+            Here is a flat list of all unique colors in your palette, filtered and sorted by hue.
           </DialogDescription>
         </DialogHeader>
 

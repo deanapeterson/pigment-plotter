@@ -232,10 +232,8 @@ export class PaletteService {
       tints: generateTints(color.hex, 5),
       shades: generateShades(color.hex, 5),
       analogous: generateAnalogous(color.hex),
-      // complementary: generateComplementary(color.hex),
       triadic: generateTriadic(color.hex),
       square: generateSquare(color.hex),
-      // tetradic: generateTetradic(color.hex),
       splitComplementary: generateSplitComplementary(color.hex)
     };
   }
@@ -255,11 +253,11 @@ export class PaletteService {
     const filteredColors: string[] = [];
     const potentialColorsArray = Array.from(allPotentialColors);
 
-    // Sort potential colors by lightness
+    // Sort potential colors by hue
     potentialColorsArray.sort((a, b) => {
       const hslA = hexToHsl(a);
       const hslB = hexToHsl(b);
-      return hslA.l - hslB.l; // Sort by lightness
+      return hslA.h - hslB.h; // Sort by hue
     });
 
     potentialColorsArray.forEach(newColorHex => {
