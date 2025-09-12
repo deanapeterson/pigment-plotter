@@ -2,8 +2,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { PaletteService } from '@/services/paletteService';
 import { ColorData } from '@/types/color'; // Updated import
 
-export const usePaletteService = () => {
-  const [paletteService] = useState(() => new PaletteService());
+export const usePaletteService = (initialSimilarityThreshold: number) => {
+  const [paletteService] = useState(() => new PaletteService(initialSimilarityThreshold));
   
   // State for the currently active palette's data
   const [colors, setColors] = useState<ColorData[]>([]);
@@ -25,6 +25,12 @@ export const usePaletteService = () => {
   useEffect(() => {
     updateAllStates();
   }, [updateAllStates]);
+
+  // Update palette service's threshold when the hook's initialSimilarityThreshold changes
+  useEffect(() => {
+    paletteService.setSimilarityThreshold(initialSimilarityThreshold);
+    updateAllStates(); // Re-render with potentially updated flat colors
+  }, [initialSimilarityThreshold, paletteService, updateAllStates]);
 
   const addColor = useCallback((hex: string, name?: string): boolean => {
     const newColor: ColorData = {

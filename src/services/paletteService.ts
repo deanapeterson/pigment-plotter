@@ -15,12 +15,15 @@ interface AllPalettesData {
 
 const LOCAL_STORAGE_KEY = "color-palette-builder-all-palette";
 const DEFAULT_PALETTE_NAME = "My Awesome Palette";
+const DEFAULT_SIMILARITY_THRESHOLD = 20; // Default threshold for CIEDE2000
 
 export class PaletteService {
   private allPalettes: Record<string, PaletteData> = {};
   private activePaletteName: string | null = null;
+  private similarityThreshold: number;
 
-  constructor() {
+  constructor(initialSimilarityThreshold: number = DEFAULT_SIMILARITY_THRESHOLD) {
+    this.similarityThreshold = initialSimilarityThreshold;
     this.loadAllPalettes();
     if (Object.keys(this.allPalettes).length === 0) {
       this.createPalette(DEFAULT_PALETTE_NAME);
@@ -181,13 +184,20 @@ export class PaletteService {
     return this.getActivePalette().name;
   }
 
+  setSimilarityThreshold(threshold: number): void {
+    this.similarityThreshold = threshold;
+    // Re-evaluate flat colors for the active palette if the threshold changes
+    this._updateFlatColors(this.getActivePalette());
+    this.saveAllPalettes();
+  }
+
   addColor(color: ColorData): boolean {
     const activePalette = this.getActivePalette();
     if (activePalette.baseColors.some(c => c.hex.toLowerCase() === color.hex.toLowerCase())) {
       return false;
     }
-    // Use the new CIEDE2000 similarity check
-    if (activePalette.baseColors.some(c => areColorsSimilarCiede2000(c.hex, color.hex))) {
+    // Use the new CIEDE2000 similarity check with the dynamic threshold
+    if (activePalette.baseColors.some(c => areColorsSimilarCiede2000(c.hex, color.hex, this.similarityThreshold))) {
       return false;
     }
 
@@ -255,7 +265,7 @@ export class PaletteService {
     potentialColorsArray.forEach(newColorHex => {
       // Check if this newColorHex is similar to any color already in filteredColors
       const isSimilarToExisting = filteredColors.some(existingColorHex =>
-        areColorsSimilarCiede2000(existingColorHex, newColorHex) // Use CIEDE2000 here too
+        areColorsSimilarCiede2000(existingColorHex, newColorHex, this.similarityThreshold) // Use CIEDE2000 here too with dynamic threshold
       );
 
       if (!isSimilarToExisting) {
@@ -325,10 +335,13 @@ export class PaletteService {
     try {
       const importData = JSON.parse(jsonString);
       if (importData.palette && importData.palette.name && Array.isArray(importData.palette.baseColors)) {
-        const newPaletteName = importData.palette.name;
-        if (this.allPalettes[newPaletteName]) {
-          console.warn(`Palette with name '${newPaletteName}' already exists. Overwriting.`);
+        let newPaletteName = importData.palette.name;
+        let counter = 1;
+        while (this.allPalettes[newPaletteName]) {
+          newPaletteName = `${importData.palette.name} (${counter})`;
+          counter++;
         }
+
         const importedPalette: PaletteData = {
           name: newPaletteName,
           baseColors: importData.palette.baseColors,

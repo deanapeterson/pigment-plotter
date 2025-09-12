@@ -66,3 +66,8 @@ export interface ImportPaletteDialogProps {
   setImportJsonInput: (json: string) => void;
   onImportPalette: () => void;
 }
+
+export interface SettingsPanelProps {
+  similarityThreshold: number;
+  setSimilarityThreshold: (threshold: number) => void;
+}

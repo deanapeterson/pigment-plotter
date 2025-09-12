@@ -11,8 +11,11 @@ import { PaletteManagementActions } from "./PaletteManagementActions";
 import { ExportPaletteActions } from "./ExportPaletteActions";
 import { PaletteHeaderSection } from "./PaletteHeaderSection";
 import { ImportPaletteDialog } from "./ImportPaletteDialog";
+import { SettingsPanel } from "./SettingsPanel"; // Import the new component
 
 export const ColorPaletteBuilder = () => {
+  const [similarityThreshold, setSimilarityThreshold] = useState(20); // Initial threshold
+  
   const {
     colors,
     paletteName,
@@ -29,7 +32,7 @@ export const ColorPaletteBuilder = () => {
     exportFlatColors,
     getVariations,
     importPaletteFromJson,
-  } = usePaletteService();
+  } = usePaletteService(similarityThreshold); // Pass threshold to the hook
 
   const [isFlatListDialogOpen, setIsFlatListDialogOpen] = useState(false);
   const [flatColorsToDisplay, setFlatColorsToDisplay] = useState<string[]>([]);
@@ -89,6 +92,10 @@ export const ColorPaletteBuilder = () => {
     <div className="min-h-screen bg-gradient-subtle">
       {/* Top Right Actions */}
       <div className="fixed top-4 right-4 z-50 flex gap-2">
+        <SettingsPanel
+          similarityThreshold={similarityThreshold}
+          setSimilarityThreshold={setSimilarityThreshold}
+        />
         <PaletteManagementActions
           allPaletteNames={allPaletteNames}
           activePaletteName={activePaletteName}
