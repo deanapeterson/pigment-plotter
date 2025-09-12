@@ -10,21 +10,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, List, Code } from "lucide-react";
 import { toast } from "sonner";
-import { getContrastColor, hexToHsl, areColorsSimilarCiede2000 } from "@/lib/colorUtils"; // Import areColorsSimilarCiede2000
+import { getContrastColor, hexToHsl, areColorsSimilarCiede2000 } from "@/lib/colorUtils";
 import { Toggle } from "@/components/ui/toggle";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider"; // Import Slider
-import { FlatColorListDialogProps } from "@/types/color"; // Updated import
+import { Slider } from "@/components/ui/slider";
+import { FlatColorListDialogProps } from "@/types/color";
 
 export const FlatColorListDialog = ({ open, onOpenChange, allUniqueColorsUnfiltered, similarityThreshold, setSimilarityThreshold }: FlatColorListDialogProps) => {
   const [viewAsJson, setViewAsJson] = useState(false);
 
-  // Filter and sort colors based on the current similarity threshold
   const filteredAndSortedColors = React.useMemo(() => {
     const filteredColors: string[] = [];
     const potentialColorsArray = [...allUniqueColorsUnfiltered];
 
-    // Sort potential colors by hue
     potentialColorsArray.sort((a, b) => {
       const hslA = hexToHsl(a);
       const hslB = hexToHsl(b);
@@ -109,6 +107,14 @@ export const FlatColorListDialog = ({ open, onOpenChange, allUniqueColorsUnfilte
             {viewAsJson ? <Code className="h-4 w-4" /> : <List className="h-4 w-4" />}
           </Toggle>
         </div>
+        
+        {/* Total Color Count */}
+        {filteredAndSortedColors.length > 0 && (
+          <p className="text-sm text-muted-foreground mb-2">
+            Total colors: <span className="font-semibold text-foreground">{filteredAndSortedColors.length}</span>
+          </p>
+        )}
+
         {filteredAndSortedColors.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">No colors in the palette to export with current threshold.</p>
         ) : (
@@ -124,7 +130,7 @@ export const FlatColorListDialog = ({ open, onOpenChange, allUniqueColorsUnfilte
                   return (
                     <div
                       key={index}
-                      className="aspect-square flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-all duration-100 hover:drop-shadow-lg" // Applied hover:drop-shadow-lg here
+                      className="aspect-square flex items-center justify-center rounded-md text-xs font-mono uppercase cursor-pointer transition-all duration-100 hover:drop-shadow-lg"
                       style={{ backgroundColor: color, color: contrastColor }}
                       title={`Click to copy ${color.toUpperCase()}`}
                       onClick={() => {

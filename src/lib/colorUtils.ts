@@ -73,8 +73,15 @@ export const generateComplementary = (baseHex: string): string[] => {
 };
 
 export const generateTriadic = (baseHex: string): string[] => {
-  // chroma.js triad() returns an array of chroma objects
-  return chroma(baseHex).triad().map(c => c.hex());
+  // Manually calculate triadic colors by shifting hue by ±120 degrees
+  const baseColor = chroma(baseHex);
+  const [h, s, l] = baseColor.hsl();
+  const triadic: string[] = [
+    chroma.hsl(h, s, l).hex(),
+    chroma.hsl((h + 120) % 360, s, l).hex(),
+    chroma.hsl((h + 240) % 360, s, l).hex(),
+  ];
+  return triadic;
 };
 
 export const generateSquare = (baseHex: string): string[] => {
@@ -93,13 +100,25 @@ export const generateSquare = (baseHex: string): string[] => {
 };
 
 export const generateTetradic = (baseHex: string): string[] => {
-  // chroma.js tetrad() returns an array of chroma objects
-  return chroma(baseHex).tetrad().map(c => c.hex());
+  // Manually calculate tetradic colors by shifting hue by 0°, 90°, 180°, and 270°
+  const baseColor = chroma(baseHex);
+  const [h, s, l] = baseColor.hsl();
+  const tetradic: string[] = [
+    chroma.hsl(h, s, l).hex(),
+    chroma.hsl((h + 90) % 360, s, l).hex(),
+    chroma.hsl((h + 180) % 360, s, l).hex(),
+    chroma.hsl((h + 270) % 360, s, l).hex(),
+  ];
+  return tetradic;
 };
 
 export const generateSplitComplementary = (baseHex: string): string[] => {
-  // chroma.js splitcomplementary() returns an array of chroma objects
-  return chroma(baseHex).splitcomplementary().map(c => c.hex());
+  // Manually calculate split complementary colors by shifting hue by ±150 degrees
+  const baseColor = chroma(baseHex);
+  const [h, s, l] = baseColor.hsl();
+  const split1 = chroma.hsl((h + 150) % 360, s, l).hex();
+  const split2 = chroma.hsl((h + 210) % 360, s, l).hex();
+  return [baseColor.hex(), split1, split2];
 };
 
 // CIEDE2000 threshold for "just noticeable difference" (JND)
