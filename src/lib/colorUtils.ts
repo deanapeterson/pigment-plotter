@@ -1,221 +1,114 @@
-// Color utility functions for the palette builder
-import { colord, extend } from "colord";
-import ciede2000Plugin from "colord/plugins/ciede2000";
-
-// Extend colord with the ciede2000 plugin
-extend([ciede2000Plugin]);
+import chroma from "chroma-js";
 
 export const isValidHex = (hex: string): boolean => {
-  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+  return chroma.valid(hex);
 };
 
 export const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : { r: 0, g: 0, b: 0 };
+  const rgb = chroma(hex).rgb();
+  return { r: rgb[0], g: rgb[1], b: rgb[2] };
 };
 
 export const rgbToHex = (r: number, g: number, b: number): string => {
-  return "#" + [r, g, b].map(x => {
-    const hex = x.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
-  }).join("");
+  return chroma(r, g, b).hex();
 };
 
 export const hexToHsl = (hex: string): { h: number; s: number; l: number } => {
-  const { r, g, b } = hexToRgb(hex);
-  const rNorm = r / 255;
-  const gNorm = g / 255;
-  const bNorm = b / 255;
-
-  const max = Math.max(rNorm, gNorm, bNorm);
-  const min = Math.min(rNorm, gNorm, bNorm);
-  const diff = max - min;
-
-  let h = 0;
-  let s = 0;
-  const l = (max + min) / 2;
-
-  if (diff !== 0) {
-    s = l > 0.5 ? diff / (2 - max - min) : diff / (max + min);
-
-    switch (max) {
-      case rNorm:
-        h = (gNorm - bNorm) / diff + (gNorm < bNorm ? 6 : 0);
-        break;
-      case gNorm:
-        h = (bNorm - rNorm) / diff + 2;
-        break;
-      case bNorm:
-        h = (rNorm - gNorm) / diff + 4;
-        break;
-    }
-    h /= 6;
-  }
-
+  const hsl = chroma(hex).hsl();
+  // chroma.js hsl returns [h (0-360), s (0-1), l (0-1)]
+  // Need to handle NaN for hue for achromatic colors and convert s,l to 0-100
   return {
-    h: Math.round(h * 360),
-    s: Math.round(s * 100),
-    l: Math.round(l * 100),
+    h: isNaN(hsl[0]) ? 0 : Math.round(hsl[0]),
+    s: Math.round(hsl[1] * 100),
+    l: Math.round(hsl[2] * 100),
   };
 };
 
 export const hslToHex = (h: number, s: number, l: number): string => {
-  const sNorm = s / 100;
-  const lNorm = l / 100;
-
-  const c = (1 - Math.abs(2 * lNorm - 1)) * sNorm;
-  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = lNorm - c / 2;
-
-  let r = 0, g = 0, b = 0;
-
-  if (0 <= h && h < 60) {
-    r = c; g = x; b = 0;
-  } else if (60 <= h && h < 120) {
-    r = x; g = c; b = 0;
-  } else if (120 <= h && h < 180) {
-    r = 0; g = c; b = x;
-  } else if (180 <= h && h < 240) {
-    r = 0; g = x; b = c;
-  } else if (240 <= h && h < 300) {
-    r = x; g = 0; b = c;
-  } else if (300 <= h && h < 360) {
-    r = c; g = 0; b = x;
-  }
-
-  return rgbToHex(
-    Math.round((r + m) * 255),
-    Math.round((g + m) * 255),
-    Math.round((b + m) * 255)
-  );
+  // chroma.js hsl expects s and l as 0-1
+  return chroma.hsl(h, s / 100, l / 100).hex();
 };
 
 export const getContrastColor = (hex: string): string => {
-  const { r, g, b } = hexToRgb(hex);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 128 ? "#000000" : "#ffffff";
+  // Using luminance for contrast
+  return chroma(hex).luminance() > 0.5 ? "#000000" : "#ffffff";
 };
 
 export const generateTints = (baseHex: string, count: number): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
-  const tints: string[] = [];
-  
-  // Calculate target max lightness, limiting to 80% of the range from base to 100%, and not exceeding 99%
-  const targetMaxL = Math.min(99, l + (100 - l) * 0.8); 
-
-  for (let i = 0; i < count; i++) {
-    const lightness = l + ((targetMaxL - l) * (i / (count - 1)));
-    tints.push(hslToHex(h, s, Math.min(100, Math.max(0, lightness))));
-  }
-  
-  return tints.filter(hex => hex.toLowerCase() !== '#ffffff');
+  // Generate a scale from base to white, then get colors. Using 'lch' mode for perceptually uniform steps.
+  // We request count + 2 colors to include the base and white, then slice to get 'count' tints excluding the base.
+  const tints = chroma.scale([baseHex, '#ffffff']).mode('lch').colors(count + 2);
+  return tints.slice(1, count + 1).filter(hex => hex.toLowerCase() !== '#ffffff');
 };
 
 export const generateShades = (baseHex: string, count: number): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
-  const shades: string[] = [];
-  
-  // Calculate target min lightness, limiting to 80% of the range from base to 0%, and not going below 1%
-  const targetMinL = Math.max(1, l - (l * 0.8));
-
-  for (let i = 0; i < count; i++) {
-    const lightness = l - ((l - targetMinL) * (i / (count - 1)));
-    shades.push(hslToHex(h, s, Math.min(100, Math.max(0, lightness))));
-  }
-  
-  return shades.filter(hex => hex.toLowerCase() !== '#000000');
+  // Generate a scale from base to black, then get colors. Using 'lch' mode for perceptually uniform steps.
+  // We request count + 2 colors to include the base and black, then slice to get 'count' shades excluding the base.
+  const shades = chroma.scale([baseHex, '#000000']).mode('lch').colors(count + 2);
+  return shades.slice(1, count + 1).filter(hex => hex.toLowerCase() !== '#000000');
 };
 
 export const generateAnalogous = (baseHex: string): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
+  // chroma.js analogous returns 3 colors by default, we need 5.
+  // Manually adjust hue for 5 colors (30 degrees apart)
+  const baseColor = chroma(baseHex);
+  const h = baseColor.hsl()[0];
+  const s = baseColor.hsl()[1];
+  const l = baseColor.hsl()[2];
+
   const analogous: string[] = [];
-  
-  // Generate 5 analogous colors (30 degrees apart)
   for (let i = -2; i <= 2; i++) {
     const hue = (h + (i * 30) + 360) % 360;
-    analogous.push(hslToHex(hue, s, l));
+    analogous.push(chroma.hsl(hue, s, l).hex());
   }
-  
   return analogous;
 };
 
 export const generateComplementary = (baseHex: string): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
-  const complementary: string[] = [];
-  
-  // Base color
-  complementary.push(baseHex);
-  
-  // Complementary color (180 degrees opposite)
-  const compHue = (h + 180) % 360;
-  complementary.push(hslToHex(compHue, s, l));
-  
-  return complementary;
+  // chroma.js complementary returns 2 colors
+  return chroma(baseHex).complementary().hex();
 };
 
 export const generateTriadic = (baseHex: string): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
-  const triadic: string[] = [];
-  
-  for (let i = 0; i < 3; i++) {
-    const hue = (h + (i * 120)) % 360;
-    triadic.push(hslToHex(hue, s, l));
-  }
-  
-  return triadic;
+  // chroma.js triad returns 3 colors
+  return chroma(baseHex).triad().hex();
 };
 
 export const generateSquare = (baseHex: string): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
-  const square: string[] = [];
+  // chroma.js doesn't have a direct square, so we calculate it
+  const baseColor = chroma(baseHex);
+  const h = baseColor.hsl()[0];
+  const s = baseColor.hsl()[1];
+  const l = baseColor.hsl()[2];
 
+  const square: string[] = [];
   for (let i = 0; i < 4; i++) {
     const hue = (h + (i * 90)) % 360;
-    square.push(hslToHex(hue, s, l));
+    square.push(chroma.hsl(hue, s, l).hex());
   }
-
   return square;
 };
 
 export const generateTetradic = (baseHex: string): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
-  const tetradic: string[] = [];
-
-  // Two complementary pairs
-  tetradic.push(baseHex); // Color 1
-  tetradic.push(hslToHex((h + 60) % 360, s, l)); // Color 2 (60 degrees from base)
-  tetradic.push(hslToHex((h + 180) % 360, s, l)); // Color 3 (complement of base)
-  tetradic.push(hslToHex((h + 240) % 360, s, l)); // Color 4 (complement of color 2)
-
-  return tetradic;
+  // chroma.js tetrad returns 4 colors
+  return chroma(baseHex).tetrad().hex();
 };
 
 export const generateSplitComplementary = (baseHex: string): string[] => {
-  const { h, s, l } = hexToHsl(baseHex);
-  const splitComplementary: string[] = [];
-
-  splitComplementary.push(baseHex); // Base color
-  splitComplementary.push(hslToHex((h + 150) % 360, s, l)); // Color 1 (150 degrees from base)
-  splitComplementary.push(hslToHex((h + 210) % 360, s, l)); // Color 2 (210 degrees from base)
-
-  return splitComplementary;
+  // chroma.js splitcomplementary returns 3 colors
+  return chroma(baseHex).splitcomplementary().hex();
 };
 
 // CIEDE2000 threshold for "just noticeable difference" (JND)
-// A common value for JND is around 2.3.
-const CIEDE2000_SIMILARITY_THRESHOLD = 2.3; 
+// chroma.js deltaE is based on CIE76, which is less perceptually uniform than CIEDE2000.
+// A common CIEDE2000 JND is around 2.3. For CIE76, a slightly higher threshold is often used for "similar enough".
+const CIE76_SIMILARITY_THRESHOLD = 5; 
 
-export const areColorsSimilarCiede2000 = (hex1: string, hex2: string, threshold: number = CIEDE2000_SIMILARITY_THRESHOLD): boolean => {
+export const areColorsSimilarCiede2000 = (hex1: string, hex2: string, threshold: number = CIE76_SIMILARITY_THRESHOLD): boolean => {
   if (!isValidHex(hex1) || !isValidHex(hex2)) {
     return false; // Cannot compare invalid hex codes
   }
-  // Calculate CIEDE2000 difference
-  const diff = colord(hex1).ciede2000(hex2);
+  // Calculate CIE76 deltaE difference using chroma.js
+  const diff = chroma.deltaE(hex1, hex2);
   return diff < threshold;
 };
