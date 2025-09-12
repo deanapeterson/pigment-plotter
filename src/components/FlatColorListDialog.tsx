@@ -95,26 +95,27 @@ export const FlatColorListDialog = ({ open, onOpenChange, allUniqueColorsUnfilte
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 mb-4">
-          <Label htmlFor="view-toggle" className="text-sm font-medium text-muted-foreground">View as JSON</Label>
-          <Toggle
-            id="view-toggle"
-            pressed={viewAsJson}
-            onPressedChange={setViewAsJson}
-            aria-label="Toggle view as JSON"
-            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          >
-            {viewAsJson ? <Code className="h-4 w-4" /> : <List className="h-4 w-4" />}
-          </Toggle>
+        <div className="flex items-center justify-between gap-2 mb-4"> {/* Combined into one flex container */}
+          {/* Total Color Count */}
+          {filteredAndSortedColors.length > 0 && (
+            <p className="text-sm text-muted-foreground">
+              Total colors: <span className="font-semibold text-foreground">{filteredAndSortedColors.length}</span>
+            </p>
+          )}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="view-toggle" className="text-sm font-medium text-muted-foreground">View as JSON</Label>
+            <Toggle
+              id="view-toggle"
+              pressed={viewAsJson}
+              onPressedChange={setViewAsJson}
+              aria-label="Toggle view as JSON"
+              className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            >
+              {viewAsJson ? <Code className="h-4 w-4" /> : <List className="h-4 w-4" />}
+            </Toggle>
+          </div>
         </div>
         
-        {/* Total Color Count */}
-        {filteredAndSortedColors.length > 0 && (
-          <p className="text-sm text-muted-foreground mb-2">
-            Total colors: <span className="font-semibold text-foreground">{filteredAndSortedColors.length}</span>
-          </p>
-        )}
-
         {filteredAndSortedColors.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">No colors in the palette to export with current threshold.</p>
         ) : (
