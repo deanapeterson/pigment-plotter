@@ -121,18 +121,37 @@ for idx, color in enumerate(data):
             image.putpixel((x, y), Image.new('RGB', (1, 1), color).getpixel((0, 0)))
 
 
-# If a custom image is provided, composite it to the front (left) of the generated image
+
+
+# If a custom image is provided, add it as a new layer centered vertically, with drop shadow on top and bottom
 if custom_image_path:
     try:
         custom_img = Image.open(custom_image_path).convert('RGBA')
-        # Resize custom image to fit the height of the generated image
-        custom_img = custom_img.resize((custom_img.width * img_size // custom_img.height, img_size), Image.LANCZOS)
-        # Create new image wide enough to hold both
-        new_width = custom_img.width + image.width
-        combined = Image.new('RGB', (new_width, img_size), 'white')
-        combined.paste(custom_img.convert('RGB'), (0, 0))
-        combined.paste(image, (custom_img.width, 0))
-        image = combined
+        max_h = int(image.height * 0.25)
+        if custom_img.height > max_h:
+            new_w = int(custom_img.width * (max_h / custom_img.height))
+            custom_img = custom_img.resize((new_w, max_h), Image.LANCZOS)
+        # Add drop shadow to top and bottom
+        shadow_height = max(6, custom_img.height // 8)
+        shadow_img = Image.new('RGBA', (custom_img.width, custom_img.height + 2 * shadow_height), (0, 0, 0, 0))
+        # Paste original image in the center
+        shadow_img.paste(custom_img, (0, shadow_height), custom_img)
+        # Draw top shadow (fade up: opaque at bottom, transparent at top)
+        for sy in range(shadow_height):
+            alpha = int(80 * (sy / shadow_height))  # 0..80
+            for sx in range(custom_img.width):
+                shadow_img.putpixel((sx, sy), (0, 0, 0, alpha))
+        # Draw bottom shadow (fade up: opaque at bottom edge, transparent above)
+        for sy in range(shadow_height):
+            alpha = int(80 * (sy / shadow_height))  # 0..80
+            for sx in range(custom_img.width):
+                shadow_img.putpixel((sx, shadow_img.height - 1 - sy), (0, 0, 0, alpha))
+        # Center horizontally and vertically
+        x_offset = (image.width - custom_img.width) // 2
+        y_offset = (image.height - shadow_img.height) // 2
+        image_rgba = image.convert('RGBA')
+        image_rgba.paste(shadow_img, (x_offset, y_offset), shadow_img)
+        image = image_rgba.convert('RGB')
     except Exception as e:
         messagebox.showerror("Custom Image Error", f"Could not add custom image: {e}")
 

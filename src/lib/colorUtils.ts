@@ -65,8 +65,9 @@ export const generateAnalogous = (baseHex: string): string[] => {
 };
 
 export const generateComplementary = (baseHex: string): string[] => {
-  // chroma.js complementary() returns an array of two chroma objects.
-  return chroma(baseHex).complementary().map(c => c.hex());
+  const baseColor = chroma(baseHex);
+  const complementColor = baseColor.complement(); // This returns a chroma object
+  return [baseColor.hex(), complementColor.hex()];
 };
 
 export const generateTriadic = (baseHex: string): string[] => {
