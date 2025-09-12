@@ -65,13 +65,15 @@ export const generateAnalogous = (baseHex: string): string[] => {
 };
 
 export const generateComplementary = (baseHex: string): string[] => {
-  // chroma.js complementary returns 2 colors
-  return chroma(baseHex).complementary().hex();
+  // chroma.js complement() returns a single complementary color.
+  // We return the base color and its complement.
+  const baseColor = chroma(baseHex);
+  return [baseColor.hex(), baseColor.complement().hex()];
 };
 
 export const generateTriadic = (baseHex: string): string[] => {
-  // chroma.js triad returns 3 colors
-  return chroma(baseHex).triad().hex();
+  // chroma.js triad() returns an array of chroma objects
+  return chroma(baseHex).triad().map(c => c.hex());
 };
 
 export const generateSquare = (baseHex: string): string[] => {
@@ -90,13 +92,13 @@ export const generateSquare = (baseHex: string): string[] => {
 };
 
 export const generateTetradic = (baseHex: string): string[] => {
-  // chroma.js tetrad returns 4 colors
-  return chroma(baseHex).tetrad().hex();
+  // chroma.js tetrad() returns an array of chroma objects
+  return chroma(baseHex).tetrad().map(c => c.hex());
 };
 
 export const generateSplitComplementary = (baseHex: string): string[] => {
-  // chroma.js splitcomplementary returns 3 colors
-  return chroma(baseHex).splitcomplementary().hex();
+  // chroma.js splitcomplementary() returns an array of chroma objects
+  return chroma(baseHex).splitcomplementary().map(c => c.hex());
 };
 
 // CIEDE2000 threshold for "just noticeable difference" (JND)
